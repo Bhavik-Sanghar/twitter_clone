@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home / Twitter</title>
+    <link rel="stylesheet" href="/css/home.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="logo">𝕏</div>
+            <a href="#" class="nav-item active">Home</a>
+            <a href="#" class="nav-item" id="gotoProfile">Profile</a>
+            <button class="tweet-btn">Post</button>
+            <div class="logout-section">
+                <h2 id="logout">Log out</h2>
+            </div>
+        </nav>
+
+        <!-- Main Feed -->
+        <main class="feed">
+            <header>
+                <h1>Home</h1>
+            </header>
+            
+            <div class="tweet-composer">
+                <div class="avatar-placeholder"></div>
+                <input type="text" placeholder="What is happening?!">
+            </div>
+
+            <div class="tweets-list">
+                <div class="tweet-card">
+                    <h3>Welcome!</h3>
+                    <p>This is your home page. Start posting updates!</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Side Widgets -->
+        <aside class="widgets">
+            <div class="search-box">
+                <input type="text" placeholder="Search">
+            </div>
+            <div class="trending">
+                <h3>What's happening</h3>
+                <div class="trend-item">#Coding #ExpressJS</div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="/js/home.js"></script>
+</body>
+</html>

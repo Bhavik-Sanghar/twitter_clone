@@ -1,0 +1,141 @@
+/* /css/profile.css */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.profile-container {
+    max-width: 600px;
+    margin: 0 auto;
+    border-left: 1px solid #eff3f4;
+    border-right: 1px solid #eff3f4;
+    min-height: 100vh;
+}
+
+/* Header styling */
+.header {
+    display: flex;
+    align-items: center;
+    padding: 5px 15px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.header button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+    margin-right: 20px;
+    transition: background 0.2s;
+}
+
+.header button:hover {
+    background: #e7e7e8;
+}
+
+.header h3 {
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.header span {
+    font-size: 13px;
+    color: #536471;
+}
+
+/* Banner & Avatar Overlap */
+.banner {
+    height: 200px;
+    background-color: #cfd9de;
+    background-size: cover;
+    background-position: center;
+    position: relative; /* Anchor for absolute avatar */
+}
+
+.avatar {
+    position: absolute;
+    bottom: -70px; /* Pulls half the avatar below the banner */
+    left: 15px;
+}
+
+.avatar img {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 4px solid #ffffff; /* The signature white border */
+    background-color: #ffffff;
+    object-fit: cover;
+}
+
+/* Profile Content Section */
+.profile-details {
+    padding: 15px;
+    margin-top: 70px; /* Space for the overlapping avatar */
+}
+
+.action-row {
+    display: flex;
+    justify-content: flex-end; /* Push button to the right */
+    margin-bottom: 20px;
+}
+
+.btn-outline {
+    background: none;
+    border: 1px solid #cfd9de;
+    border-radius: 9999px;
+    padding: 8px 16px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-outline:hover {
+    background: #e7e7e8;
+}
+
+/* Text Elements */
+#view-mode h2 {
+    font-size: 20px;
+    font-weight: 800;
+    color: #0f1419;
+}
+
+.handle {
+    font-size: 15px;
+    color: #536471;
+    margin-bottom: 12px;
+}
+
+.bio {
+    font-size: 15px;
+    color: #0f1419;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.meta {
+    font-size: 15px;
+    color: #536471;
+    display: flex;
+    gap: 10px;
+}
+
+/* Joined date icon spacing (optional) */
+.meta span::before {
+    content: "📅 ";
+    font-size: 14px;
+}

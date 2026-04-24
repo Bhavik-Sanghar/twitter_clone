@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Page</title>
+    <link rel="stylesheet" href="/css/email_simulation.css">
+</head>
+
+<body>
+    <div id="otp-result" class="otp-box">
+        <p><strong>Email Received:</strong></p>
+        <div id="display-otp" class="otp-code">
+            <%= otp %>
+        </div>
+        <p>Code Will Be Valid For 2 Minutes.</p>
+        <a href="/reset-password" class="link-text">Click here to reset →</a>
+    </div>
+</body>
+
+</html>

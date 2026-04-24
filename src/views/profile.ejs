@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= user.user_name %> (@<%= user.user_name %>) / Twitter
+    </title>
+    <link rel="stylesheet" href="/css/profile.css">
+</head>
+
+<body>
+
+    <div class="profile-container">
+        <div class="header">
+            <button onclick="window.history.back()">←</button>
+            <div>
+                <h3>
+                    <%= user.first_name %>
+                        <%= user.last_name %>
+                </h3>
+                <span>0 Tweets</span>
+            </div>
+        </div>
+
+        <div class="banner" style="background-image: url('/<%= user.cover_pic %>');">
+            <div class="avatar">
+                <img src="/<%= user.proifle_pic %>" alt="Profile">
+            </div>
+        </div>
+
+        <div class="profile-details">
+            <div class="action-row">
+                <button id="editProfile" class="btn-outline">Edit profile</button>
+            </div>
+
+                <h2>
+                    <%= user.first_name %>
+                    <%= user.last_name %>
+                </h2>
+                <p class="handle">@<%= user.user_name %>
+                </p>
+                <p class="bio">
+                    <%= user.bio || 'No bio yet.' %>
+                </p>
+                <div class="dob">
+                    <span>Date of Birth: <%= user.birthdate ? new Date(user.birthdate).toLocaleDateString() : 'Not specified' %></span>
+                </div>
+                <div class="website">
+                    <span>Website : </span>
+                    <% if (user.website) { %>
+                        <a href="<%= user.website %>" target="_blank"><%= user.website %></a>
+                    <% } else { %>
+                        <span>No website</span>
+                    <% } %>
+                </div>
+                <div class="locaton">
+                    <span>Location: <%= user.location || 'Not specified' %></span>
+                </div>
+                <div class="meta">
+                    <span>Joined <%= new Date(user.created_at).toLocaleDateString() %></span>
+                </div>
+                
+
+
+        </div>
+    </body>
+    <script src="/js/profile.js"></script>
+
+</html>

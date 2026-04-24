@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    <link rel="stylesheet" href="/css/profile_edit.css">
+</head>
+<body>
+    <form id="edit_profile" enctype="multipart/form-data">
+    <div class="formgroup">
+        <label for="banner">Banner : </label>
+        <input type="file" name="banner" id="banner">
+    </div>
+    
+    <div class="formgroup">
+        <label for="avatar">Profile Photo : </label>
+        <input type="file" name="avatar" id="avatar">
+    </div>
+
+    <div class="formgroup">
+        <label for="first_name">First Name :</label>
+        <input type="text" name="first_name" id="first_name" placeholder="First Name" 
+               value="<%= user?.first_name || '' %>" required>
+    </div>
+
+    <div class="formgroup">
+        <label for="last_name">Last Name :</label>
+        <input type="text" name="last_name" id="last_name" placeholder="Last Name" 
+               value="<%= user?.last_name || '' %>" required>
+    </div>
+
+    <div class="formgroup">
+        <label for="bio">Bio :</label>
+        <input type="text" name="bio" id="bio" placeholder="Bio" 
+               value="<%= user?.bio || '' %>">
+    </div>
+
+    <div class="formgroup">
+        <label for="location">Location :</label>
+        <input type="text" name="location" id="location" placeholder="Location" 
+               value="<%= user?.location || '' %>">
+    </div>
+
+    <div class="formgroup">
+        <label for="website">Website :</label>
+        <input type="text" name="website" id="website" placeholder="Website" 
+               value="<%= user?.website || '' %>">
+    </div>
+
+    <div class="formgroup">
+        <label for="dob">Date of Birth :</label>
+        <input type="date" name="dob" id="dob" 
+               value="<%= (user?.birthdate) ? new Date(user.birthdate).toISOString().split('T')[0] : '' %>">
+    </div>
+
+    <button type="submit">Save Changes</button> 
+</form>
+<script src="/js/profile_edit.js"></script>
+</body>
+</html>
