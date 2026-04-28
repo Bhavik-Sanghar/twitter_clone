@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { getOTP, isUserEmailExist, isUserPhoneExist, isUserUserNameExist, loginUser, registerUser, resetPassword , resendOTP, resetPasswordLink, logoutUser} from "../controllers/auth.controller";
 import { authForgetPaths, valOtpage } from "../middleware/validateforgetpassword.middleware";
+import jwt from 'jsonwebtoken' 
 
 
 const router = Router();
@@ -36,8 +37,8 @@ router.get("/reset-password",authForgetPaths ,resetPasswordLink);
 
 
 router.get("/emailPage" , authForgetPaths , (req:Request , res:Response) => {
-    const otp = req.query.o;
-    return res.render("email_simulation" , {otp})
+    const otp = jwt.decode(req.cookies.reset_token) as {otp:string} | null
+    return res.render("email_simulation" , {otp : otp?.otp})
 })
 
 
@@ -46,4 +47,4 @@ router.post("/reset-password" , authForgetPaths , resetPassword)
 router.post("/resend-otp" , authForgetPaths , resendOTP)
 
 
-export default router;
+export default router;``

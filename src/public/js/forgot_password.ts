@@ -19,7 +19,7 @@
 
   const res = await response.json();
   if (response.status == 201) {
-      window.location.href = `/emailPage?o=${res.otp}`
+      window.location.href = `/emailPage`;
   } else {
     (document.getElementById("search_error") as HTMLDivElement).innerHTML =
       `${res.message}`;

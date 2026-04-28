@@ -14,7 +14,6 @@ const storage = multer.diskStorage({
       folder += "tweets";
     }
 
-    // Ensure the directory exists
     fs.mkdirSync(folder, { recursive: true });
     cb(null, folder);
   },

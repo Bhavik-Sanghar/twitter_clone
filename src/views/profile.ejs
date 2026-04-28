@@ -11,61 +11,209 @@
 </head>
 
 <body>
+    <!-- Left Sidebar -->
+    <nav class="sidebar">
+        <div class="logo">𝕏</div>
+        <a href="/user" class="nav-item active">Home</a>
+        <%- isOwnProfile ? `<a href="/user/change-password" class="nav-item"> Change Password</a>` : "" %>
+    </nav>
 
     <div class="profile-container">
+        <!-- Header with Back Button and Tweet Count -->
         <div class="header">
-            <button onclick="window.history.back()">←</button>
-            <div>
+            <button class="back-btn" onclick="window.history.back()">←</button>
+            <div class="header-info">
                 <h3>
                     <%= user.first_name %>
                         <%= user.last_name %>
                 </h3>
-                <span>0 Tweets</span>
+                <span class="tweet-count">
+                    <%= tweet_count || 0 %> Tweets
+                </span>
+
             </div>
         </div>
 
-        <div class="banner" style="background-image: url('/<%= user.cover_pic %>');">
+        <!-- Banner & Overlapping Avatar -->
+        <div class="banner" style="background-image: url('/<%= user.cover_pic_url %>');">
             <div class="avatar">
-                <img src="/<%= user.proifle_pic %>" alt="Profile">
+                <img src="/<%= user.profile_pic_url %>" alt="Profile">
             </div>
         </div>
 
         <div class="profile-details">
+
             <div class="action-row">
-                <button id="editProfile" class="btn-outline">Edit profile</button>
+                <% if (isOwnProfile) { %>
+                    <!-- Show Edit button if it's the logged-in user's own profile -->
+                    <button id="editProfile" class="btn-outline">Edit profile</button>
+                    <% } else { %>
+                        <!-- Show Follow/Unfollow button for other users -->
+                        <form
+                            action="/user/follow/<%= user.user_name %>/<%= user.user_id %>/<%= isFollowing ? 'unfollow' : 'follow' %>"
+                            method="POST">
+                            <button type="submit" class="<%= isFollowing ? 'btn-unfollow' : 'btn-follow' %>">
+                                <%= isFollowing ? 'Following' : 'Follow' %>
+                            </button>
+                        </form>
+                        <% } %>
             </div>
 
-                <h2>
+
+            <!-- Basic Info -->
+            <div class="info-section">
+                <h2 class="display-name">
                     <%= user.first_name %>
-                    <%= user.last_name %>
+                        <%= user.last_name %>
+                        <span id="isVerified"><%= isVerified ? "☑️" : "Your Email is not verfied please verify" %></span>
                 </h2>
                 <p class="handle">@<%= user.user_name %>
                 </p>
                 <p class="bio">
                     <%= user.bio || 'No bio yet.' %>
                 </p>
-                <div class="dob">
-                    <span>Date of Birth: <%= user.birthdate ? new Date(user.birthdate).toLocaleDateString() : 'Not specified' %></span>
-                </div>
-                <div class="website">
-                    <span>Website : </span>
-                    <% if (user.website) { %>
-                        <a href="<%= user.website %>" target="_blank"><%= user.website %></a>
-                    <% } else { %>
-                        <span>No website</span>
+            </div>
+
+            <!-- Meta Data (Location, Web, Join Date) -->
+            <div class="meta-data">
+                <% if (user.location) { %>
+                    <span>📍 <%= user.location %></span>
                     <% } %>
-                </div>
-                <div class="locaton">
-                    <span>Location: <%= user.location || 'Not specified' %></span>
-                </div>
-                <div class="meta">
-                    <span>Joined <%= new Date(user.created_at).toLocaleDateString() %></span>
-                </div>
-                
+                        <% if (user.website) { %>
+                            <span>🔗 <a href="<%= user.website %>" target="_blank" class="link">
+                                    <%= user.website %>
+                                </a></span>
+                            <% } %>
+                                <% if (user.birthdate) { %>
+                                    <span>🎈 Born <%= new Date(user.birthdate).toLocaleDateString() %></span>
+                                    <% } %>
+                                        <span>📅 Joined <%= new Date(user.created_at).toLocaleDateString('en-IN', {
+                                                month: 'long' , year: 'numeric' }) %></span>
+            </div>
 
+            <!-- Follower/Following Counts (Clickable) -->
+            <div class="stats-row">
+                <a href="/user/followers/<%= user.user_id %>" class="stat-link">
+                    <strong>
+                        <%= following_count || 0 %>
+                    </strong> <span class="stat-label">Following</span>
 
+                    <strong>
+                        <%= followers_count || 0 %>
+                    </strong> <span class="stat-label">Followers</span>
+                </a>
+                <span class="tweet-count">
+                    <%= tweet_count || 0 %> Tweets
+                </span>
+            </div>
         </div>
-    </body>
+
+        <!-- Tabs for Tweets / Media / Likes (Twitter Style) -->
+        <div class="profile-tabs">
+            <div class="tab active">Tweets</div>
+            <!-- <div class="tab">Replies</div>
+            <div class="tab">Media</div>
+            <div class="tab">Likes</div> -->
+        </div>
+
+        <div id="user-tweets-feed">
+            <% tweets.forEach(tweet=> { %>
+                <div class="tweet-card">
+                    <div class="tweet-header">
+                        <img src="/<%= user.profile_pic_url %>" alt="Profile" class="tweet-avatar">
+                        <div class="tweet-user-info">
+                            <span class="tweet-display-name">
+                                <%= user.first_name %>
+                                    <%= user.last_name %>
+                            </span>
+                            <span class="tweet-handle">@<%= user.user_name %></span>
+                        </div>
+                    </div>
+                    <div id="tweet-edit-delete-div"
+                        style="display: <%= tweet.user_id === user.user_id ? 'block' : 'none' %>;">
+                        <span id="<%= tweet.tweet_id %>_del">Delete</span>
+                        <span id="<%= tweet.tweet_id %>_edit">Edit</span>
+                    </div>
+
+                    <p class="tweet-content">
+                        <%= tweet.content %>
+                    </p>
+                    <% if (tweet.image_url) { %>
+                        <div class="tweet-image">
+                            <img src="/<%= tweet.image_url %>" alt="Tweet Image">
+                        </div>
+                        <% } %>
+                            <div class="tweet-actions">
+                                <form class="like-tweet-form">
+                                    <span class="action-btn like-btn <%= tweet.isLiked ? 'active-like' : '' %>"
+                                        id="like-container-<%= tweet.tweet_id %>">
+                                        <input type="hidden" name="tweet_id" value="<%= tweet.tweet_id %>">
+                                        <button type="submit"
+                                            style="background: none; border: none; cursor: pointer; color: inherit; font-size: inherit;">
+                                            <span class="heart-icon">
+                                                <%= tweet.isLiked ? "❤️" : "🤍" %>
+                                            </span>
+                                        </button>
+                                        <span class="count">
+                                            <%= tweet.likes_count %>
+                                        </span>
+                                    </span>
+                                </form>
+
+                                <form class="retweet-form">
+                                    <span
+                                        class="action-btn retweet-btn <%= tweet.isRetweeted ? 'active-retweet' : '' %>"
+                                        id="retweet-container-<%= tweet.tweet_id %>">
+                                        <input type="hidden" name="tweet_id" value="<%= tweet.tweet_id %>">
+                                        <button type="submit"
+                                            style="background: none; border: none; cursor: pointer; color: inherit; font-size: inherit;">
+                                            <span class="retweet-icon">
+                                                <%= tweet.isRetweeted ? "🔂" : "🔁" %>
+                                            </span>
+                                        </button>
+                                        <span class="count_retweets">
+                                            <%= tweet.retweet_count %>
+                                        </span>
+                                </form>
+
+                                <form class="comment-form">
+                                    <span class="action-btn comment-btn" id="comment-container-<%= tweet.tweet_id %>">
+                                        <input type="hidden" name="tweet_id" value="<%= tweet.tweet_id %>">
+                                        <button type="submit"
+                                            style="background: none; border: none; cursor: pointer; color: inherit; font-size: inherit;">💬</button>
+                                        <span class="count_comments" id="count_comment_<%= tweet.tweet_id %>">
+                                            <%= tweet.comment_count %>
+                                        </span>
+                                    </span>
+                                </form>
+
+                                <div class="comment-section" id="comment-section-<%= tweet.tweet_id %>"
+                                    style="display: none;">
+                                    <div class="comment-input-area">
+                                        <input type="text" placeholder="Write a reply..." class="comment-input"
+                                            id="comment-input-<%= tweet.tweet_id %>">
+                                        <button type="button" class="reply-btn" id="reply-btn-<%= tweet.tweet_id %>"
+                                            data-tweet-id="<%= tweet.tweet_id %>">
+                                            Reply
+                                        </button>
+                                    </div>
+                                    <div class="comments-list" id="comments-list-<%= tweet.tweet_id %>">
+                                        <!-- Comments load here -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tweet-meta">
+                                    <%= new Date(tweet.created_at).toLocaleTimeString([], { hour: '2-digit' ,
+                                        minute: '2-digit' }) %> ·
+                                        <%= new Date(tweet.created_at).toLocaleDateString([], { day: 'numeric' ,
+                                            month: 'short' , year: 'numeric' }) %>
+                                </div>
+                </div>
+                <% }); %>
+        </div>
+    </div>
+
     <script src="/js/profile.js"></script>
+</body>
 
 </html>

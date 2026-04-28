@@ -2,7 +2,7 @@
   "submit",
   async (e) => {
     e.preventDefault();
-
+    
     const formData = new FormData(
       document.getElementById("edit_profile") as HTMLFormElement,
     );

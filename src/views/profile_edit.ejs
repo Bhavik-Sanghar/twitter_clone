@@ -51,7 +51,7 @@
     <div class="formgroup">
         <label for="dob">Date of Birth :</label>
         <input type="date" name="dob" id="dob" 
-               value="<%= (user?.birthdate) ? new Date(user.birthdate).toISOString().split('T')[0] : '' %>">
+               value="<%= (user?.birthdate) ? new Date(user.birthdate).toISOString().split('T')[0] : '' %>" required>
     </div>
 
     <button type="submit">Save Changes</button> 

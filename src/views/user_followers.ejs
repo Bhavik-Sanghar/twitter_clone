@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= user.user_name %> Follower/Follwing
+    </title>
+    <link rel="stylesheet" href="/css/followers.css">
+</head>
+
+<body>
+    <div id="sidebar">
+        <nav>
+            <div class="logo">𝕏</div>
+            <a href="/user" class="nav-item">Home</a>
+            <a href="/user/profile/<%= user.user_name %>" class="nav-item">Profile</a>
+        </nav>
+        <div class="logout-section">
+            <h2 id="logout">Log out</h2>
+        </div>
+    </div>
+        <div id="main-content">
+             <h1>Hey 👋 <%= user.user_name %></h1>
+            <div class="tabs-nav">
+                <button class="tab-link active" onclick="switchTab(event, 'follower_div')">Followers</button>
+                <button class="tab-link" onclick="switchTab(event, 'following_div')">Following</button>
+            </div>
+
+            <div id="follower_div" class="tab-content">
+                <% followers.forEach(follower=> { %>
+                    <div class="follower-card">
+                        <img src="/<%= follower.profile_pic_url %>" alt="Profile" class="follower-avatar">
+                        <div class="follower-info">
+                            <span class="follower-name">
+                                <%= follower.first_name %>
+                                    <%= follower.last_name %>
+                            </span>
+                            <span class="follower-username">@<%= follower.user_name %></span>
+                        </div>
+                    </div>
+                    <% }) %>
+            </div>
+
+            <div id="following_div" class="tab-content" style="display:none">
+                <% following.forEach(followed=> { %>
+                    <div class="follower-card">
+                        <img src="/<%= followed.profile_pic_url %>" alt="Profile" class="follower-avatar">
+                        <div class="follower-info">
+                            <span class="follower-name">
+                                <%= followed.first_name %>
+                                    <%= followed.last_name %>
+                            </span>
+                            <span class="follower-username">@<%= followed.user_name %></span>
+                        </div>
+                    </div>
+                    <% }) %>
+            </div>
+        </div>
+
+</body>
+<script>
+    function switchTab(evt, tabName) {
+
+        const contents = document.getElementsByClassName("tab-content");
+        for (let content of contents) {
+            content.style.display = "none";
+        }
+
+        const links = document.getElementsByClassName("tab-link");
+        for (let link of links) {
+            link.classList.remove("active");
+        }
+
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.classList.add("active");
+    }
+
+</script>
+
+</html>

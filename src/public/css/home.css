@@ -1,3 +1,12 @@
+/* Variables */
+:root {
+    --twitter-blue: #1d9bf0;
+    --twitter-hover: #1a8cd8;
+    --border-color: #eff3f4;
+    --text-main: #0f1419;
+    --text-dim: #536471;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -7,73 +16,52 @@
 
 body {
     background-color: #ffffff;
-    color: #0f1419;
+    color: var(--text-main);
 }
 
+/* THE FIX: Rigid 3-column Grid */
 .container {
     display: grid;
-    grid-template-columns: 275px 600px 1fr;
-    max-width: 1250px;
+    grid-template-columns: 275px 600px 350px; /* Sidebar | Feed | Search */
+    justify-content: center;
     margin: 0 auto;
-    min-height: 100vh;
+    max-width: 1300px;
 }
 
-/* Sidebar Styling - Left */
+/* Sidebar - Fixed on Left */
 .sidebar {
     padding: 10px 20px;
-    border-right: 1px solid #eff3f4;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    border: 1px solid var(--border-color);
     position: sticky;
     top: 0;
     height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-.logo {
-    font-size: 28px;
-    color: #1d9bf0; /* Twitter Blue */
-    padding: 12px;
-}
+.logo { font-size: 30px; padding: 12px; cursor: pointer; }
 
 .nav-item {
-    color: #0f1419;
+    color: var(--text-main);
     text-decoration: none;
     font-size: 19px;
     padding: 12px 16px;
     border-radius: 30px;
-    transition: background 0.2s;
+    margin-bottom: 4px;
+    display: block;
     font-weight: 500;
 }
 
-.nav-item:hover {
-    background-color: #e7e7e8;
-}
+.nav-item:hover { background-color: #e7e7e8; }
+.nav-item.active { font-weight: 700; }
 
-.nav-item.active {
-    font-weight: 700;
-}
+.logout-section { margin-top: auto; padding: 15px 0; }
+#logout { color: #f4212e; cursor: pointer; font-size: 18px; }
 
-.tweet-btn {
-    background-color: #1d9bf0;
-    color: white;
-    border: none;
-    padding: 15px;
-    margin-top: 10px;
-    border-radius: 30px;
-    font-weight: bold;
-    font-size: 17px;
-    cursor: pointer;
-    box-shadow: 0px 4px 12px rgba(29, 155, 240, 0.2);
-}
-
-.tweet-btn:hover {
-    background-color: #1a8cd8;
-}
-
-/* Main Feed - Center */
+/* Main Feed */
 .feed {
-    border-right: 1px solid #eff3f4;
+    border-right: 1px solid var(--border-color);
+    min-width: 0; /* Important: prevents blowout */
 }
 
 header {
@@ -82,59 +70,102 @@ header {
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(12px);
     padding: 15px;
-    border-bottom: 1px solid #eff3f4;
+    border-bottom: 1px solid var(--border-color);
     z-index: 10;
 }
 
-header h1 {
-    font-size: 20px;
-    font-weight: 700;
-}
+header h1 { font-size: 20px; font-weight: 700; }
 
+/* Tweet Composer */
 .tweet-composer {
     padding: 16px;
     display: flex;
     gap: 12px;
-    border-bottom: 1px solid #eff3f4;
+    border-bottom: 1px solid var(--border-color);
 }
 
-.avatar-placeholder {
+.avatar-placeholder img , .comment-user-avatar img{
     width: 48px;
     height: 48px;
-    background-color: #cfd9de;
     border-radius: 50%;
-    flex-shrink: 0;
+    object-fit: cover;
 }
 
-.tweet-composer input {
-    background: transparent;
+#tweetForm { flex: 1; }
+#tweet_content {
+    width: 100%;
     border: none;
-    color: #0f1419;
     font-size: 20px;
     outline: none;
-    flex: 1;
+    padding: 10px 0;
+}
+
+.composer-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding-top: 10px;
+    border-top: 1px solid var(--border-color);
 }
 
-.tweet-composer input::placeholder {
-    color: #536471;
-}
-
-.tweet-card {
-    padding: 16px;
-    border-bottom: 1px solid #eff3f4;
-    transition: background 0.2s;
+.tweet-btn {
+    background-color: var(--twitter-blue);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-weight: 700;
     cursor: pointer;
 }
 
-.tweet-card:hover {
-    background-color: #f7f7f7;
+/* Tweets List */
+.tweet-card {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    transition: 0.2s;
 }
 
-/* Right Panel - Widgets */
+.tweet-card:hover { background-color: #f7f7f7; }
+.tweet-header , .suggested-user-card { display: flex; gap: 12px; align-items: center; }
+.tweet-avatar , .search_result_avatar , .suggested-avatar { width: 48px; height: 48px; border-radius: 50%; }
+.tweet-username , .suggested-handle { font-weight: 700; }
+.tweet-handle { color: var(--text-dim); }
+
+.tweet-content {
+    margin-left: 60px;
+    margin-top: -10px;
+    font-size: 15px;
+    line-height: 20px;
+}
+
+.tweet-image {
+    margin: 12px 0 0 60px;
+    width: calc(100% - 60px);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+}
+
+/* Meta Data (Timestamp) */
+.tweet-meta {
+    margin-top: 12px;     /* Space below the action buttons */
+    margin-left: 58px;    /* Aligns text with the tweet content, skipping the avatar width */
+    font-size: 13px;
+    color: #536471;
+    display: block;       /* Ensures it stays on its own line at the bottom */
+    padding-bottom: 5px;
+}
+
+/* Optional: hover effect like classic Twitter */
+.tweet-meta:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+/* Widgets - Fixed on Right */
 .widgets {
-    padding: 10px 30px;
-    background-color: #ffffff;
+    padding: 10px 25px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
 }
 
 .search-box input {
@@ -143,13 +174,7 @@ header h1 {
     border: 1px solid transparent;
     padding: 12px 20px;
     border-radius: 30px;
-    color: #0f1419;
     outline: none;
-}
-
-.search-box input:focus {
-    background-color: #ffffff;
-    border-color: #1d9bf0;
 }
 
 .trending {
@@ -159,27 +184,153 @@ header h1 {
     border-radius: 16px;
 }
 
-.trending h3 {
-    font-size: 20px;
-    margin-bottom: 12px;
+/* Responsive */
+@media (max-width: 1100px) {
+    .container { grid-template-columns: 275px 1fr; }
+    .widgets { display: none; }
 }
 
-.trend-item {
-    padding: 10px 0;
-    color: #1d9bf0;
-    font-weight: 500;
+
+/* Container for the whole comment area */
+.comment-section {
+    background-color: #f5f8fa; /* Light blue-gray tint */
+    border-top: 1px solid #e1e8ed;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 0 0 8px 8px;
+}
+
+/* Scrollable area */
+.comments-list {
+    max-height: 250px; /* Fixed height */
+    overflow-y: auto;  /* Scrollable */
+    padding: 5px;
+    background: white;
+    border: 1px solid #e1e8ed;
+    border-radius: 4px;
+}
+
+/* Individual comment styling */
+.sample-comment {
+    padding: 8px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+}
+
+.sample-comment:last-child {
+    border-bottom: none;
+}
+
+/* Comment Input Styling */
+.comment-input-area {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.comment-input {
+    flex: 1;
+    padding: 6px;
+    border: 1px solid #ccd6dd;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.reply-btn {
+    background: #00acee;
+    color: white;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 12px;
     cursor: pointer;
 }
 
-/* Footer Items */
-.logout-section {
-    margin-top: auto;
-    padding: 12px;
-    cursor: pointer;
+/* Modern Scrollbar for the comments */
+.comments-list::-webkit-scrollbar {
+    width: 6px;
+}
+.comments-list::-webkit-scrollbar-thumb {
+    background-color: #ccd6dd;
+    border-radius: 10px;
 }
 
-#logout {
-    color: #f4212e;
-    font-size: 16px;
-    font-weight: 600;
+.tweet-actions {
+    display: flex;
+    padding-left: 100px;
+    justify-content: space-between;
+    max-width: 400px; /* Keeps them from spreading too wide */
+    margin-top: 12px;
+    margin-bottom: 10px;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #536471;
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.action-btn button {
+    margin: 8px;
+    padding: 8px;
+    border-radius: 50%;
+    transition: 0.2s;
+}
+
+/* Hover effects like Twitter */
+.like-btn:hover { color: #f91880; }
+.like-btn:hover button { background-color: rgba(249, 24, 128, 0.1); }
+
+.retweet-btn:hover { color: #00ba7c; }
+.retweet-btn:hover button { background-color: rgba(0, 186, 124, 0.1); }
+
+.comment-btn:hover { color: #1d9bf0; }
+.comment-btn:hover button { background-color: rgba(29, 155, 240, 0.1); }
+
+/* Individual Comment Wrapper */
+.comment-item {
+    display: flex;
+    flex-direction: column; /* Stack name/text above the time */
+    padding: 12px 16px;
+    border-bottom: 1px solid #eff3f4;
+    transition: background 0.2s;
+}
+
+.comment-item:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* User and Content Row */
+.comment-user {
+    font-weight: 800;
+    color: #0f1419;
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.comment-text {
+    color: #0f1419;
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word; /* Prevents long words from breaking layout */
+}
+
+/* Timestamp at the bottom right or left */
+.comment-time {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #536471; /* Twitter-style gray */
+    font-weight: 400;
+}
+
+/* Responsive fix for very small screens */
+@media (max-width: 500px) {
+    .comment-item {
+        padding: 8px 12px;
+    }
 }

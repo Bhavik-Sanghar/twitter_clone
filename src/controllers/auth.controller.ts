@@ -110,7 +110,7 @@ const registerUser = async (req: Request, res: Response) => {
   const hashPassword = await bcypt.hash(password, 10);
 
   const query = `
-INSERT INTO users(first_name , last_name , user_name , email , phone , user_password) values (? , ? , ? , ? , ? , ?);
+INSERT INTO users(first_name , last_name , user_name , email , phone , user_password , time_zone) values (? , ? , ? , ? , ? , ? , ?);
 `;
   try {
     const [data1] = await pool.execute(
@@ -149,6 +149,8 @@ INSERT INTO users(first_name , last_name , user_name , email , phone , user_pass
       };
       return res.status(400).json(response);
     }
+
+    const time_zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     await pool.execute(query, [
       firstName,
       lastName,
@@ -156,6 +158,7 @@ INSERT INTO users(first_name , last_name , user_name , email , phone , user_pass
       email,
       phone,
       hashPassword,
+      time_zone
     ]);
     const response: ApiResponse = {
       success: true,
@@ -177,7 +180,7 @@ const loginUser = async (req: Request, res: Response) => {
   const { identifier, password, remember_me } = req.body;
 
   try {
-    const query = `SELECT user_id , user_password from users where email = ? or phone = ? or user_name = ?`;
+    const query = `SELECT user_id , user_name ,user_password from users where email = ? or phone = ? or user_name = ?`;
     const [data] = await pool.execute(query, [
       identifier,
       identifier,
@@ -191,7 +194,8 @@ const loginUser = async (req: Request, res: Response) => {
         const token = jwt.sign(
           {
             identifier: identifier,
-            user_id : result[0].user_id
+            user_id : result[0].user_id,
+            user_name : result[0].user_name
           },
           process.env.JWT_SECRET_KEY as string,
           {
@@ -252,13 +256,12 @@ const  getOTP = async (req: Request, res: Response) => {
       );
 
       res.cookie("reset_token", reset_token, {
-        maxAge: 1000 * 60 * 2,
+        maxAge: 1000 * 60 * 10,
       });
 
       const response: ApiResponse = {
         success: true,
-        message: "User Found Sending OTP!!",
-        otp: otp,
+        message: "User Found Sending OTP!!"
       };
       return res.status(201).json(response);
     } else {
@@ -279,10 +282,13 @@ const  getOTP = async (req: Request, res: Response) => {
 };
 
 const resetPasswordLink = (req: Request, res: Response) => {
-  const decoded = jwt.verify(
-    req.cookies.reset_token,
-    process.env.JWT_SECRET_KEY as string,
-  ) as { exp: number };
+  const token = req.cookies.reset_token;
+  
+  if (!token) return res.redirect("/forgot-password");
+
+  const decoded = jwt.decode(token) as { otp: string; exp: number } | null;
+
+  if (!decoded) return res.redirect("/forgot-password");
 
   return res.render("reset_password", { expiresAt: decoded.exp * 1000 });
 };
@@ -297,8 +303,9 @@ const resendOTP = async (req: Request, res: Response) => {
   if (!token) return res.status(401).json(response);
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY as string) as {
+    const decoded = jwt.decode(token) as {
       email: string;
+      otp: string;
     };
     const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -309,12 +316,12 @@ const resendOTP = async (req: Request, res: Response) => {
     );
     res.cookie("reset_token", newToken, {
       httpOnly: true,
-      maxAge: 1000 * 60 * 2,
+      maxAge: 1000 * 60 * 10,
     });
     const response: ApiResponse = {
       success: true,
       message: "New OTP is Genrated Go ON new link",
-      redirecturl: `/emailPage?o=${newOtp}`,
+      redirecturl: `/emailPage`,
     };
     res.status(201).json(response);
   } catch (err) {
@@ -329,15 +336,14 @@ const resendOTP = async (req: Request, res: Response) => {
 
 const resetPassword = async (req: Request, res: Response) => {
   const { otp, password } = req.body;
-  const decode = jwt.verify(
+  const decode = jwt.decode(
     req.cookies.reset_token,
-    process.env.JWT_SECRET_KEY as string,
-  ) as JwtPayload;
+  ) as { email: string; otp: string } | null;
 
   const lastPassword_query = `SELECT user_password from users where email = ?`;
 
   try {
-    const [data] = await pool.query(lastPassword_query, [decode.email]);
+    const [data] = await pool.query(lastPassword_query, [decode?.email]);
     const lastPassword = (data as any[])[0].user_password;
 
     const isSame = await bcypt.compare(password, lastPassword);
@@ -349,10 +355,10 @@ const resetPassword = async (req: Request, res: Response) => {
       };
       res.status(400).json(response);
     } else {
-      if (otp == decode.otp) {
+      if (otp == decode?.otp) {
         const query = `UPDATE users SET user_password = ? where email = ?`;
         const hashedNewPassword = await bcypt.hash(password, 10);
-        await pool.execute(query, [hashedNewPassword, decode.email]);
+        await pool.query(query, [hashedNewPassword, decode?.email]);
         const response: ApiResponse = {
           success: true,
           message: "Password Reset Done",

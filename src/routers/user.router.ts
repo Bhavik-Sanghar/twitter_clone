@@ -1,6 +1,6 @@
 import { Router, Request, Response, request, response } from "express";
 import { authUser } from "../middleware/auth.middleware";
-import { getUserData, updateUserProfile } from "../controllers/user.controller";
+import { createComment, getComments, getEditProfile, getFollowersFollowingList, getProfile, homePage, retweetToggle, searchUsers, toggelFollow, tweetLikeToggle, tweetPost, updateUserProfile } from "../controllers/user.controller";
 import { upload } from "../middleware/fileUpload.middleware";
 
 
@@ -8,34 +8,48 @@ const router = Router();
 
 router.use(authUser)
 
-router.get("/" , (req:Request , res:Response)=>{
-    res.render("home")
-})
+router.get("/" ,homePage);
 
-router.get("/profile" , (req:Request , res:Response) => {
-    return getUserData(req, res, "profile");
-})
+router.get("/profile/:username" ,getProfile)
 
-router.get("/profile_edit",(req:Request , res:Response) => {
-    return getUserData(req, res, "editProfile");
-})
+router.get("/profile_edit" , getEditProfile)
 
 router.post("/editUserProfile",  upload.fields([
     { name: "avatar", maxCount: 1 },
     { name: "banner", maxCount: 1 }
   ]), updateUserProfile
-    // (req: Request, res: Response) => {
-    //     // Access non-file text fields (firstName, bio, etc.)
-    //     console.log("Text Fields:", req.body); 
-
-    //     // Access files (banner, avatar)
-    //     // Since we used .fields(), these are inside req.files
-    //     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-    //     console.log("Banner File:", files?.['banner']?.[0]);
-    //     console.log("Avatar File:", files?.['avatar']?.[0]);
-
-    //     res.status(200).json({ message: "Profile updated!" });
-    // }
 );
+
+router.post("/tweets/create", upload.fields([
+  { name: "tweet_img", maxCount: 1 } 
+]), tweetPost);
+
+
+//Follow-Unfollow 
+router.post("/follow/:username/:userid/:toggelfollow" , toggelFollow)
+
+//Search Users
+router.get("/search/users" , searchUsers)
+
+//like unlike
+router.post("/tweets/like_dislike/:tweetId" , tweetLikeToggle)
+
+
+//Follower and Following List
+router.get("/followers/:userId" , getFollowersFollowingList)
+
+//Retweet
+router.post("/tweets/retweet/:tweetId" , retweetToggle)
+
+//GetComments
+router.post("/tweets/comments/getComments/:tweetId", getComments)
+
+//create Comments
+router.post("/tweets/comments/createComment" , createComment)
+
+//chnage Password page
+router.get("/change-password" , (req:Request,res:Response) => {
+  res.render("change_password")
+})  
 
 export default router;
