@@ -335,6 +335,46 @@ header h1 {
   border-color: var(--twitter-blue);
 }
 
+.search_result_item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.search_result_item:last-child {
+    border-bottom: none;
+}
+
+.search_result_item:hover {
+    background-color: #f8f9fa;
+}
+
+.search_result_avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+    background-color: #eee; /* Fallback color */
+}
+
+.search_result_item b {
+    font-size: 14px;
+    color: #333;
+    display: flex;
+    flex-direction: column; /* Stack name and username */
+}
+
+.search_result_item b span {
+    font-weight: normal;
+    color: #666;
+    font-size: 13px;
+}
+
+
 .suggested-users {
   background-color: #f7f9f9;
   border-radius: 16px;

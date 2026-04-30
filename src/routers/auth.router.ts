@@ -42,6 +42,7 @@ router.get("/getcaptcha", async (req: Request, res: Response) => {
     expiresAt: Date.now() + 10 * 60 * 1000, 
   };
 
+  console.log(req.session.captcha);
   res.type("svg");
   res.send(captcha_data.data);
 });

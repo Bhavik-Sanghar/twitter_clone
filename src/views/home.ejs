@@ -76,6 +76,9 @@
                                 <span class="del_tweet" data-tweet-id="<%= tweet.tweet_id %>"
                                     id="<%= tweet.tweet_id %>_del">Delete</span>
                             </div>
+                            <div id="tweet-share" style="padding-left: 10px;">
+                                <span id="share_tweet_<%tweet.tweet_id%>" class="share-tweet" data-tweet-link="<%= tweet.user_name %>/<%= tweet.tweet_id %>">🔗</span>
+                            </div>
                         </div>
 
                         <p class="tweet-content" id="<%= tweet.tweet_id %>">
@@ -153,10 +156,6 @@
                                                 id="comments-list-<%= tweet.tweet_id %>-<%= uniqeId %>">
                                                 <!-- Comments load here -->
                                             </div>
-                                        </div>
-
-                                        <div class="share-tweet">
-                                            <button class="share-btn" id="share-btn-<%= tweet.tweet_id %>">🔗</button>
                                         </div>
                                 </div>
                                 <div class="tweet-meta">

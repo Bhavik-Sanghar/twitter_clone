@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shared Tweet</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .tweet-card {
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin-top: 20px;
+        }
+        .tweet-header {
+            display: flex;
+            align-items: center;
+        }
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .display-name {
+            font-weight: bold;
+        }
+        .username {
+            color: #555;
+        }
+        .tweet-content {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        .tweet-image {
+            margin-top: 10px;
+            max-width: 100%;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Shared Tweet</h1>
+    <p><strong>Username:</strong> <%= tweet.user_name %></p>
+    <p><strong>Tweet ID:</strong> <%= tweet.tweet_id %></p>
+    <div class="tweet-card" id="tweet_<%= tweet.tweet_id %>">
+        <div class="tweet-header">
+            <img src="/<%= tweet.profile_pic_url %>" alt="Profile Picture" class="profile-pic">
+            <div class="user-info">
+                <span class="display-name"><%= tweet.display_name %></span>
+                <span class="username">@<%= tweet.user_name %></span>
+            </div>
+        </div>
+        <p class="tweet-content"><%= tweet.content %></p>
+        <% if(tweet.image_url) {%>
+            <img src="/<%= tweet.image_url %>" alt="Tweet Image" class="tweet-image">
+        <% } %>
+    </div>
+</body>
+</html>

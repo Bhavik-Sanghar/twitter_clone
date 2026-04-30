@@ -496,3 +496,34 @@ export const changePassword = async (req: Request, res: Response) => {
     });
   }
 };
+
+
+//shared tweet page
+export const shareTweetPage = async (req: Request, res: Response) => {
+  const rawUsername = req.params.username;
+  const username = Array.isArray(rawUsername) ? rawUsername[0] : rawUsername;
+
+  const rawTweetId = req.params.tweetId;
+  const tweetId = Array.isArray(rawTweetId) ? rawTweetId[0] : rawTweetId;
+
+  if (!username || !tweetId) {
+    return res.status(400).send("Invalid URL parameters");
+  }
+
+  try {
+    const [data] = await pool.execute<RowDataPacket[]>(
+      "SELECT t.*, u.user_name , u.profile_pic_url FROM tweets t JOIN users u ON t.user_id = u.user_id WHERE t.tweet_id = ? AND u.user_name = ?",
+      [tweetId, username],
+    );
+
+    if ((data as any).length === 0) {
+      return res.status(404).send("Tweet not found");
+    }
+
+    const tweet = (data as any)[0];
+    res.render("share_tweet", { tweet });
+  } catch (error) {
+    console.error("Error fetching tweet for sharing:", error);
+    res.status(500).send("An error occurred while fetching the tweet");
+  }
+};

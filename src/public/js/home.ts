@@ -4,7 +4,6 @@ declare const profile_pic_url: string;
 
 declare const user_id: string;
 
-
 //tweet time formatting
 document.querySelectorAll(".tweet-time").forEach((el) => {
   const rawTime = el.getAttribute("data-time");
@@ -127,34 +126,54 @@ removeImg.addEventListener("click", () => {
 
     try {
       const response = await fetch(
-        `/user/search/users?q=${encodeURIComponent(query)}`,
+        `/user/search/users?q=${query}`,
       );
       const results = await response.json();
 
       resultsContainer.innerHTML = results
         .map((user: any) => {
           return `
-                <div class="search_result_item" data-username="${user.user_name}">
-                    <img src="/${user.profile_pic_url}" alt="${user.user_name}'s profile picture" class="search_result_avatar">
-                    <b>${user.first_name} ${user.last_name} (<span>${user.user_name}</span>)</b>
-                </div>
-            `;
-        })
-        .join("");
+        <div class="search_result_item" data-username="${user.user_name}">
+            <img src="/${user.profile_pic_url}" class="search_result_avatar">
+            <b>
+              ${user.first_name} ${user.last_name}
+             <span>@${user.user_name}</span>
+          </b>
+    </div>
+`;}).join("");
 
-      resultsContainer
-        .querySelectorAll(".search_result_item")
-        .forEach((item) => {
-          item.addEventListener("click", () => {
+
+        resultsContainer.querySelectorAll(".search_result_item").forEach((item) => {
+            item.addEventListener("click", () => {
             const username = item.getAttribute("data-username");
             if (username) {
               window.location.href = `/user/profile/${username}`;
             }
           });
         });
-    } catch (error) {
+    } 
+    
+    
+    catch (error) {
       console.error("Search error:", error);
     }
   },
 );
+
+
+//when user click on share it will copy link to clipboard
+document.querySelectorAll(".share-tweet").forEach((ele) => {
+  ele.addEventListener("click", async () => {
+    const tweetLink = ele.getAttribute("data-tweet-link");
+    const link = `${window.location.origin}/user/share/${tweetLink}`;
+
+    try {
+      await navigator.clipboard.writeText(link);
+      showToast("Link copied to clipboard!", "success");
+    } catch (error) {
+      console.error("Failed to copy link:", error);
+      showToast("Failed to copy link.", "error");
+    }
+  });
+});
 

@@ -8,6 +8,7 @@ export const verifyCaptcha = (
   const { captcha_inp } = req.body;
 
   const storedCaptcha = req.session.captcha;
+  console.log("hii store captha is " , storedCaptcha);
 
   // Check if the CAPTCHA exists, if it matches the user input, and if it has not expired
   if (!storedCaptcha) {

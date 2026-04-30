@@ -178,8 +178,6 @@ function reload_captcha() {
       ).innerHTML = ``;
     }
 
-    
-
     if (isVal) {
       const formData = {
         firstName: firstName,
@@ -202,7 +200,7 @@ function reload_captcha() {
       if(submit.status == 201){
         window.location.href = `${response.redirecturl}`
       }
-      else if(submit.status == 400){
+      if(submit.status == 400){
         (
           document.getElementById("captcha_error") as HTMLParagraphElement
         ).innerHTML = `${response.message}`;

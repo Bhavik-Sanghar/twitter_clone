@@ -1,6 +1,6 @@
 import { Router, Request, Response, request, response } from "express";
 import { authUser } from "../middleware/auth.middleware";
-import { changePassword, createComment, deleteTweet, getComments, getEditProfile, getFollowersFollowingList, getProfile, homePage, retweetToggle, searchUsers, toggelFollow, tweetLikeToggle, tweetPost, updateUserProfile } from "../controllers/user.controller";
+import { changePassword, createComment, deleteTweet, getComments, getEditProfile, getFollowersFollowingList, getProfile, homePage, retweetToggle, searchUsers, shareTweetPage, toggelFollow, tweetLikeToggle, tweetPost, updateUserProfile } from "../controllers/user.controller";
 import { upload } from "../middleware/fileUpload.middleware";
 
 
@@ -58,5 +58,8 @@ router.delete("/tweet/:tweetId/delete" , deleteTweet);
 
 //chnagePassword
 router.post("/changePassword" , changePassword)
+
+//shrare tweet
+router.get("/share/:username/:tweetId" , shareTweetPage);
 
 export default router;
