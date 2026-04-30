@@ -3,6 +3,8 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import pool from "../configs/db.config";
 import { RowDataPacket } from "mysql2";
 import { ApiResponse } from "../types";
+import bcypt from "bcrypt";
+
 import fs from "fs";
 
 import {
@@ -157,7 +159,7 @@ export const getProfile = async (req: Request, res: Response) => {
     (tweet) => ((tweet as any).comment_count = commentMap[tweet.tweet_id] || 0),
   );
 
-  const isVerified = true;
+  const isVerified = false;
 
   res.render("profile", {
     user: profileUser,
@@ -186,28 +188,6 @@ export const updateUserProfile = async (req: Request, res: Response) => {
   const token = jwt.decode(req.cookies.jwt_token) as JwtPayload;
   const { user_id, user_name } = token;
 
-  //delete old pics with fs.unlink if new pics uploaded to avoid unused files in media folder
-  if (files?.["avatar"]?.[0]?.path) {
-    const user = await fetchUserById(user_id);
-    if (user?.profile_pic_url) {
-      try {
-        await fs.promises.unlink(user.profile_pic_url);
-      } catch (error) {
-        console.error("Error deleting old avatar:", error);
-      }
-    }
-  }
-
-  if (files?.["banner"]?.[0]?.path) {
-    const user = await fetchUserById(user_id);
-    if (user?.cover_pic_url) {
-      try {
-        await fs.promises.unlink(user.cover_pic_url);
-      } catch (error) {
-        console.error("Error deleting old banner:", error);
-      }
-    }
-  }
 
   const updates: Record<string, any> = {
     first_name,
@@ -220,18 +200,18 @@ export const updateUserProfile = async (req: Request, res: Response) => {
     cover_pic_url: files?.["banner"]?.[0]?.path,
   };
 
-  const fieldsToUpdate = Object.keys(updates).filter(
+  const updateThings = Object.keys(updates).filter(
     (key) => updates[key] !== undefined,
   );
 
-  if (fieldsToUpdate.length === 0) {
+  if (updateThings.length === 0) {
     return res
       .status(400)
       .json({ success: false, message: "Nothing to update" });
   }
 
-  const setClause = fieldsToUpdate.map((field) => `${field} = ?`).join(", ");
-  const values = fieldsToUpdate.map((field) => updates[field]);
+  const setClause = updateThings.map((field) => `${field} = ?`).join(", ");
+  const values = updateThings.map((field) => updates[field]);
 
   values.push(user_id);
 
@@ -335,23 +315,23 @@ export const tweetLikeToggle = async (req: Request, res: Response) => {
   const tweet_id = req.params.tweetId;
 
   try {
-    const [data] = await pool.execute<RowDataPacket[]>(
-      "SELECT * FROM likes WHERE user_id = ? AND tweet_id = ?",
+    const [del]: any = await pool.execute(
+      "DELETE FROM likes WHERE user_id = ? AND tweet_id = ?",
       [user_id, tweet_id],
     );
 
-    if ((data as any).length > 0) {
-      await pool.execute(
-        "DELETE FROM likes WHERE user_id = ? AND tweet_id = ?",
-        [user_id, tweet_id],
-      );
-      res.status(201).json({ success: true, message: "Tweet unliked" });
-    } else {
+    if (del.affectedRows > 0) {
+      return res.json({ message: "Tweet unliked" });
+    }
+
+    try {
       await pool.execute(
         "INSERT INTO likes (user_id, tweet_id) VALUES (?, ?)",
         [user_id, tweet_id],
       );
-      res.status(201).json({ success: true, message: "Tweet liked" });
+      res.json({ message: "Tweet liked" });
+    } catch (err: any) {
+      res.json({ message: "Tweet liked" });
     }
   } catch (error) {
     console.error("Like Toggle Error:", error);
@@ -440,22 +420,79 @@ export const getComments = async (req: Request, res: Response) => {
     console.error("Error fetching comments:", error);
     return res.status(500).json({ message: "Error while fetching comments" });
   }
-}
+};
 
 //Create Comment
 export const createComment = async (req: Request, res: Response) => {
   const { comment_content, tweetId } = req.body;
-  
+
   const user_id = (jwt.decode(req.cookies.jwt_token) as JwtPayload).user_id;
 
   try {
-    const query = "INSERT INTO comments (user_id, tweet_id, content) VALUES (?, ?, ?)";
+    const query =
+      "INSERT INTO comments (user_id, tweet_id, content) VALUES (?, ?, ?)";
 
     await pool.execute(query, [user_id, tweetId, comment_content]);
 
-    res.status(201).json({message : "Comment Added successfully!!"});
+    res.status(201).json({ message: "Comment Added successfully!!" });
   } catch (error) {
-    console.log("Error while insert comment" , error);
-    res.status(500).json({message : "Error while adding comment"})
+    console.log("Error while insert comment", error);
+    res.status(500).json({ message: "Error while adding comment" });
+  }
+};
+
+//delete Tweet
+export const deleteTweet = async (req: Request, res: Response) => {
+  const rawTweetId = req.params.tweetId;
+  const tweetId = Array.isArray(rawTweetId) ? rawTweetId[0] : rawTweetId;
+  if (!tweetId) {
+    return res.status(400).json({ message: "tweetID param is required" });
+  }
+
+  const tweet_id = parseInt(tweetId, 10);
+  if (Number.isNaN(tweet_id)) {
+    return res.status(400).json({ message: "Invalid tweetID parameter" });
+  }
+
+  try {
+    await pool.execute("DELETE FROM tweets WHERE tweet_id = ?", [tweet_id]);
+    res.status(201).json({ message: "Tweet deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting tweet:", error);
+    res.status(500).json({ message: "Error while deleting the tweet" });
+  }
+};
+
+export const changePassword = async (req: Request, res: Response) => {
+  const user_id = (jwt.decode(req.cookies.jwt_token) as JwtPayload).user_id;
+  const { cuurent_password, new_password } = req.body;
+
+  try {
+    const query = `SELECT user_password from users where user_id = ?`;
+    const [data] = await pool.execute<RowDataPacket[]>(query, [user_id]);
+    const isMatch = await bcypt.compare(
+      cuurent_password,
+      data[0]!.user_password,
+    );
+
+    if (!isMatch) {
+      return res
+        .status(400)
+        .json({ message: "Current password is not valid try again !!" });
+    } else {
+      const hashedNewPassword = await bcypt.hash(new_password, 10);
+      const query = `UPDATE users SET user_password = ? where user_id = ?`;
+      await pool.execute(query, [hashedNewPassword, user_id]);
+      res.clearCookie("jwt_token");
+      res.status(201).json({
+        message: "Password changed successful!!",
+        redirecturl: "/",
+      });
+    }
+  } catch (error) {
+    console.log("Server side error while change password", error);
+    res.status(500).json({
+      message: "Error While Changeing Password"
+    });
   }
 };

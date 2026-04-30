@@ -1,50 +1,117 @@
 import { Router, Request, Response } from "express";
-import { getOTP, isUserEmailExist, isUserPhoneExist, isUserUserNameExist, loginUser, registerUser, resetPassword , resendOTP, resetPasswordLink, logoutUser} from "../controllers/auth.controller";
-import { authForgetPaths, valOtpage } from "../middleware/validateforgetpassword.middleware";
-import jwt from 'jsonwebtoken' 
+import session from "express-session";
 
+import {
+  getOTP,
+  isUserEmailExist,
+  isUserPhoneExist,
+  isUserUserNameExist,
+  loginUser,
+  registerUser,
+  resetPassword,
+  resendOTP,
+  resetPasswordLink,
+  logoutUser,
+  captcha,
+} from "../controllers/auth.controller";
+import {
+  authForgetPaths,
+  valOtpage,
+} from "../middleware/validateforgetpassword.middleware";
+import jwt, { verify } from "jsonwebtoken";
+import { verifyCaptcha } from "../middleware/verifyCAPTCHA";
 
 const router = Router();
 
-router.post("/checkEmail",isUserEmailExist)
-router.post("/checkPhone",isUserPhoneExist)
-router.post("/checkUserName",isUserUserNameExist)
-
-router.get("/" , (req:Request , res:Response)=>{
-   if(req.cookies.jwt_token){
-    return res.redirect("/user")
-   }
-   return res.render("login")
-})
-
-router.get("/signup" , (req:Request , res:Response)=>{
-    return res.render("signup")
-})
-
-router.post("/signup" , registerUser)
-
-router.post("/login" , loginUser)
-
-router.get("/logout" , logoutUser)
-
-router.get("/forgot-password"  ,(req:Request , res:Response)=>{
-    return res.render("forgot_password")
-})
-
-router.post("/forgot-password" , valOtpage ,getOTP)
-
-router.get("/reset-password",authForgetPaths ,resetPasswordLink);
+router.use(
+  session({
+    secret: "This is Secret Key",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+  }),
+);
 
 
-router.get("/emailPage" , authForgetPaths , (req:Request , res:Response) => {
-    const otp = jwt.decode(req.cookies.reset_token) as {otp:string} | null
-    return res.render("email_simulation" , {otp : otp?.otp})
-})
+//Route to genrate captcha and send svg to client
+router.get("/getcaptcha", async (req: Request, res: Response) => {
+  const captcha_data = captcha();
+
+  req.session.captcha = {
+    text: captcha_data.text,
+    expiresAt: Date.now() + 10 * 60 * 1000, 
+  };
+
+  res.type("svg");
+  res.send(captcha_data.data);
+});
 
 
-router.post("/reset-password" , authForgetPaths , resetPassword)
+//Route to chcek is email , phone , user_name is taken or not 
+router.post("/checkEmail", isUserEmailExist);
+router.post("/checkPhone", isUserPhoneExist);
+router.post("/checkUserName", isUserUserNameExist);
 
-router.post("/resend-otp" , authForgetPaths , resendOTP)
 
 
-export default router;``
+//Route to / if already logged in then home page else login
+router.get("/", (req: Request, res: Response) => {
+  if (req.cookies.jwt_token) {
+    return res.redirect("/user");
+  }
+  return res.render("login");
+});
+
+router.get("/login", (req: Request, res: Response) => {
+  if (req.cookies.jwt_token) {
+    return res.redirect("/user");
+  }
+  return res.render("login");
+});
+
+
+//Route to SignUp ... Register USers page 
+router.get("/signup", (req: Request, res: Response) => {
+  return res.render("signup");
+});
+
+//Route to store user registration with captcha middleware
+router.post("/signup", verifyCaptcha ,registerUser);
+
+
+//Route to login user with Credentials
+router.post("/login", loginUser);
+
+
+//Route to logout user
+router.get("/logout", logoutUser);
+
+
+//Route to forgot password page
+router.get("/forgot-password", (req: Request, res: Response) => {
+  return res.render("forgot_password");
+});
+
+
+//Route to getOTP and send on email page
+router.post("/forgot-password", valOtpage, getOTP);
+
+
+//Route to resend OTP/ resetPassword link 
+router.get("/reset-password", authForgetPaths, resetPasswordLink);
+
+
+//Route to Email page along with OTP
+router.get("/emailPage", authForgetPaths, (req: Request, res: Response) => {
+  const otp = jwt.decode(req.cookies.reset_token) as { otp: string } | null;
+  return res.render("email_simulation", { otp: otp?.otp });
+});
+
+
+//
+router.post("/reset-password", authForgetPaths, resetPassword);
+
+router.post("/resend-otp", authForgetPaths, resendOTP);
+
+export default router;
+``;

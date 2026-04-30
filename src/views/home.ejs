@@ -53,7 +53,11 @@
 
             <div class="tweets-list">
                 <% feed.forEach(tweet=> { %>
-                    <div class="tweet-card">
+                    <div class="tweet-card" id="tweet_<%= tweet.tweet_id %>">
+                        <span class="retweet-info">
+                            <%= (tweet.post_type==="retweet" ) ? `↳↰ Reposted BY ${tweet.retweeter_name}` : "" %>
+                        </span>
+                        <br>
                         <div class="tweet-header">
                             <img src="/<%= tweet.profile_pic_url %>" alt="Profile" class="tweet-avatar">
                             <div class="tweet-header-info">
@@ -69,7 +73,8 @@
                             <div id="tweet-edit-delete-div"
                                 style="display: <%= tweet.user_id === user.user_id ? 'flex' : 'none' %>;">
                                 <span id="<%= tweet.tweet_id %>_edit">Edit</span>
-                                <span id="<%= tweet.tweet_id %>_del">Delete</span>
+                                <span class="del_tweet" data-tweet-id="<%= tweet.tweet_id %>"
+                                    id="<%= tweet.tweet_id %>_del">Delete</span>
                             </div>
                         </div>
 
@@ -115,43 +120,49 @@
                                                 <%= tweet.retweet_count %>
                                             </span>
                                         </span>
-                                    </form> <!-- ADDED CLOSING FORM -->
+                                    </form>
 
                                     <!-- Comment Form -->
-                                    <form class="comment-form">
-                                        <span class="action-btn comment-btn"
-                                            id="comment-container-<%= tweet.tweet_id %>">
-                                            <input type="hidden" name="tweet_id" value="<%= tweet.tweet_id %>">
-                                            <button type="submit"
-                                                style="background: none; border: none; cursor: pointer; color: inherit; font-size: inherit;">💬</button>
-                                            <span class="count_comments" id="count_comment_<%= tweet.tweet_id %>">
-                                                <%= tweet.comment_count %>
+                                    <% const uniqeId=tweet.shared_id %>
+                                        <form class="comment-form">
+                                            <span class="action-btn comment-btn"
+                                                id="comment-container-<%= tweet.tweet_id %>">
+                                                <input type="hidden" name="tweet_id" value="<%= tweet.tweet_id %>">
+                                                <input type="hidden" name="unique_id" value="<%= uniqeId %>">
+                                                <button type="submit"
+                                                    style="background: none; border: none; cursor: pointer; color: inherit; font-size: inherit;">💬</button>
+                                                <span class="count_comments" id="count_comment_<%= tweet.tweet_id %>">
+                                                    <%= tweet.comment_count %>
+                                                </span>
                                             </span>
-                                        </span>
-                                    </form>
-                                </div> <!-- ADDED CLOSING ACTIONS DIV -->
+                                        </form>
+                                        <div class="comment-section"
+                                            id="comment-section-<%= tweet.tweet_id %>-<%= uniqeId %>"
+                                            style="display: none;">
+                                            <div class="comment-input-area">
+                                                <input type="text" placeholder="Write a reply..." class="comment-input"
+                                                    id="comment-input-<%= tweet.tweet_id %>-<%= uniqeId %>">
+                                                <button type="button" class="reply-btn"
+                                                    id="reply-btn-<%= tweet.tweet_id %>-<%= uniqeId %>"
+                                                    data-unique-id="<%= uniqeId %>"
+                                                    data-tweet-id="<%= tweet.tweet_id %>">
+                                                    Reply
+                                                </button>
+                                            </div>
+                                            <div class="comments-list"
+                                                id="comments-list-<%= tweet.tweet_id %>-<%= uniqeId %>">
+                                                <!-- Comments load here -->
+                                            </div>
+                                        </div>
 
-                                <div class="comment-section" id="comment-section-<%= tweet.tweet_id %>"
-                                    style="display: none;">
-                                    <div class="comment-input-area">
-                                        <input type="text" placeholder="Write a reply..." class="comment-input"
-                                            id="comment-input-<%= tweet.tweet_id %>">
-                                        <button type="button" class="reply-btn" id="reply-btn-<%= tweet.tweet_id %>"
-                                            data-tweet-id="<%= tweet.tweet_id %>">
-                                            Reply
-                                        </button>
-                                    </div>
-                                    <div class="comments-list" id="comments-list-<%= tweet.tweet_id %>">
-                                        <!-- Comments load here -->
-                                    </div>
+                                        <div class="share-tweet">
+                                            <button class="share-btn" id="share-btn-<%= tweet.tweet_id %>">🔗</button>
+                                        </div>
                                 </div>
-
                                 <div class="tweet-meta">
-                                    <%= new Date(tweet.created_at).toLocaleTimeString([], { hour: '2-digit' ,
-                                        minute: '2-digit' }) %> ·
-                                        <%= new Date(tweet.created_at).toLocaleDateString([], { day: 'numeric' ,
-                                            month: 'short' , year: 'numeric' }) %>
+                                    <span class="tweet-time" data-time="<%= tweet.created_at %>"></span>
                                 </div>
+
                     </div>
                     <% }) %>
             </div>
@@ -173,7 +184,9 @@
                 <div class="suggested-user" id="suggested-users-container">
                     <% suggestedUsers.forEach(element=> { %>
                         <div class="suggested-user-card">
-                            <img src="/<%= element.profile_pic_url %>" alt="Profile" class="suggested-avatar">
+                            <div class="suggested-avatar">
+                                <img src="/<%= element.profile_pic_url %>" alt="Profile">
+                            </div>
                             <div class="suggested-user-info">
                                 <span class="suggested-display-name">
                                     <%= element.first_name %>
@@ -188,8 +201,11 @@
             </div>
         </aside>
     </div>
-
-    <script> let user_name = "<%= user.user_name %>" </script>
+    <script> let user_name = "<%= user.user_name %>"
+        let user_id = "<%= user.user_id %>"
+        let profile_pic_url = "<%= user.profile_pic_url %>"
+    </script>
+    <script src="/js/feed.js"></script>
     <script src="/js/home.js"></script>
 </body>
 

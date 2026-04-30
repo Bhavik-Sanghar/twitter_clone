@@ -1,3 +1,19 @@
+
+const captcha_image = document.getElementById(
+  "captcha_image",
+) as HTMLImageElement;
+const reload = document.getElementById("reload");
+
+reload?.addEventListener("click", () => {
+  reload_captcha();
+});
+
+function reload_captcha() {
+  (document.getElementById("captcha_inp") as HTMLInputElement).value = "";
+  captcha_image.src = `/getcaptcha?t=${Date.now()}`;
+}
+
+
 (document.getElementById("signup_form") as HTMLFormElement).addEventListener(
   "submit",
   async (e) => {
@@ -33,6 +49,9 @@
       document.getElementById("confirmPassword") as HTMLInputElement
     ).value.trim();
 
+    const captcha_inp: string = (
+      document.getElementById("captcha_inp") as HTMLInputElement
+    ).value.trim();
 
     const usernameRegex = /^[a-zA-Z_]\w*$/;
     if (!usernameRegex.test(user_name)) {
@@ -146,7 +165,8 @@
       !email ||
       !phone ||
       !password ||
-      !confirmpassword
+      !confirmpassword ||
+      !captcha_inp
     ) {
       isVal = false;
       (
@@ -168,6 +188,7 @@
         phone: phone,
         user_name: user_name,
         password: password,
+        captcha_inp: captcha_inp,
       };
       const submit = await fetch("/signup", {
         method: "POST",
@@ -181,9 +202,16 @@
       if(submit.status == 201){
         window.location.href = `${response.redirecturl}`
       }
+      else if(submit.status == 400){
+        (
+          document.getElementById("captcha_error") as HTMLParagraphElement
+        ).innerHTML = `${response.message}`;
+        reload_captcha();
+      } 
       else{
         (document.getElementById("submit_error") as HTMLParagraphElement).innerHTML = `${response.message}`
       }
     }
   },
 );
+

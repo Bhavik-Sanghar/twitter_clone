@@ -1,6 +1,6 @@
 import { Router, Request, Response, request, response } from "express";
 import { authUser } from "../middleware/auth.middleware";
-import { createComment, getComments, getEditProfile, getFollowersFollowingList, getProfile, homePage, retweetToggle, searchUsers, toggelFollow, tweetLikeToggle, tweetPost, updateUserProfile } from "../controllers/user.controller";
+import { changePassword, createComment, deleteTweet, getComments, getEditProfile, getFollowersFollowingList, getProfile, homePage, retweetToggle, searchUsers, toggelFollow, tweetLikeToggle, tweetPost, updateUserProfile } from "../controllers/user.controller";
 import { upload } from "../middleware/fileUpload.middleware";
 
 
@@ -51,5 +51,12 @@ router.post("/tweets/comments/createComment" , createComment)
 router.get("/change-password" , (req:Request,res:Response) => {
   res.render("change_password")
 })  
+
+//Delete Tweet
+router.delete("/tweet/:tweetId/delete" , deleteTweet);
+
+
+//chnagePassword
+router.post("/changePassword" , changePassword)
 
 export default router;

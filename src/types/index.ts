@@ -6,3 +6,13 @@ export interface ApiResponse {
     redirecturl ?: string,
     otp ?: string
 }
+
+
+declare module "express-session" {
+  interface SessionData {
+    captcha: {
+      text?: string;
+      expiresAt?: number;
+    };
+  }
+}

@@ -4,6 +4,20 @@ import { ApiResponse } from "../types";
 import bcypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
+//Helper function for captcha generation
+var svgCaptcha = require("svg-captcha");
+
+export const captcha = () => {
+  return svgCaptcha.createMathExpr({
+    mathMin: 2,
+    mathMax: 7,
+    mathOperator: "+",
+  });
+};
+
+
+
+
 const isUserEmailExist = async (req: Request, res: Response) => {
   /**
    * Here we try to find if user email is alrdy in DB if we found then we return false

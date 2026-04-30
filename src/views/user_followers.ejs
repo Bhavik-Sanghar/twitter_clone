@@ -37,7 +37,7 @@
                                 <%= follower.first_name %>
                                     <%= follower.last_name %>
                             </span>
-                            <span class="follower-username">@<%= follower.user_name %></span>
+                            <a href="/user/profile/<%= follower.user_name %>"><span class="follower-username">@<%= follower.user_name %></span></a>
                         </div>
                     </div>
                     <% }) %>
@@ -52,7 +52,7 @@
                                 <%= followed.first_name %>
                                     <%= followed.last_name %>
                             </span>
-                            <span class="follower-username">@<%= followed.user_name %></span>
+                            <a href="/user/profile/<%= followed.user_name %>"></a><span class="follower-username">@<%= followed.user_name %></span></a>
                         </div>
                     </div>
                     <% }) %>

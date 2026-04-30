@@ -105,19 +105,56 @@ export const featchIslikedByUser = async (
 };
 
 // For home feed, we need to fetch tweets from users that the current user is following, incluing their own tweets.
-export const homeFeed = async (user_id: number) => {
+// export const homeFeed = async (user_id: number) => {
+//   const [data] = await pool.execute<RowDataPacket[]>(
+//     `SELECT t.*, u.user_name, u.profile_pic_url , u.first_name , u.last_name
+//      FROM tweets t
+//      JOIN users u ON t.user_id = u.user_id
+//      WHERE t.user_id IN (
+//        SELECT following_id FROM follows WHERE follower_id = ? UNION SELECT ?
+//      )
+//      ORDER BY t.created_at DESC`,
+//     [user_id, user_id],
+//   );
+//   return data;
+// };
+
+export const homeFeed = async(user_id : number)=> {
   const [data] = await pool.execute<RowDataPacket[]>(
-    `SELECT t.*, u.user_name, u.profile_pic_url , u.first_name , u.last_name
-     FROM tweets t
-     JOIN users u ON t.user_id = u.user_id
-     WHERE t.user_id IN (
-       SELECT following_id FROM follows WHERE follower_id = ? UNION SELECT ?
-     )
-     ORDER BY t.created_at DESC`,
-    [user_id, user_id],
+    `
+    SELECT t.tweet_id, 
+        t.user_id AS user_id, 
+        t.user_id AS shared_id,
+        t.content, 
+        t.image_url, 
+        t.created_at AS created_at, 
+        'tweet' AS post_type,
+        u.user_name, u.profile_pic_url, u.first_name, u.last_name,
+        NULL AS retweeter_name FROM tweets t JOIN users u ON u.user_id = t.user_id 
+        WHERE t.user_id IN ( SELECT following_id FROM follows WHERE follower_id = ? UNION SELECT ? )
+
+        UNION ALL
+
+    SELECT t.tweet_id,
+        t.user_id AS user_id, 
+        r.user_id AS shared_id,
+        t.content, 
+        t.image_url, 
+        r.created_at AS created_at, 
+        'retweet' AS post_type,
+        u.user_name, u.profile_pic_url, u.first_name, u.last_name,
+        ru.user_name AS retweeter_name 
+        FROM retweets r
+        JOIN tweets t ON t.tweet_id = r.original_tweet_id
+        JOIN users u ON t.user_id = u.user_id
+        JOIN users ru ON r.user_id = ru.user_id
+        WHERE r.user_id IN ( SELECT following_id FROM follows WHERE follower_id = ? UNION SELECT ? )
+
+        ORDER  BY created_at DESC
+    ` , [user_id , user_id , user_id , user_id]
   );
   return data;
-};
+}
 
 // For suggested users
 export const suggestions = async (user_id: number) => {
