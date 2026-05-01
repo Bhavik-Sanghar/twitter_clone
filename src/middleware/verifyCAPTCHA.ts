@@ -17,6 +17,7 @@ export const verifyCaptcha = (
   }
   // If the CAPTCHA is valid, proceed to the next middleware or route handler
   else if (storedCaptcha.text == captcha_inp) {
+    req.session.captcha = {}; 
     next();
   }
 };

@@ -80,6 +80,8 @@ export const homePage = async (req: Request, res: Response) => {
     (tweet) => ((tweet as any).comment_count = commentMap[tweet.tweet_id] || 0),
   );
 
+
+
   res.render("home", {
     user: user,
     feed: feed,
@@ -114,7 +116,7 @@ export const getProfile = async (req: Request, res: Response) => {
       isOwnProfile
         ? Promise.resolve(false)
         : checkIsFollowing(currentUserId, profileUser.user_id),
-        fetchverficationStatus(profileUser.user_id)
+      fetchverficationStatus(profileUser.user_id)
     ]);
 
   //Tweeet Like and isLiked by current user
@@ -200,6 +202,7 @@ export const getVerifybedgePage = async (req: Request, res: Response) => {
   res.render("verify_email", { otp: verfication_otp });
 };
 
+// For Verfication Bedge 
 export const getVerfiy = async (req: Request, res: Response) => {
   const user_id = (jwt.decode(req.cookies.jwt_token) as JwtPayload).user_id;
   const user_name = (jwt.decode(req.cookies.jwt_token) as JwtPayload).user_name;
@@ -224,6 +227,7 @@ export const getVerfiy = async (req: Request, res: Response) => {
     } else {
       const query = `UPDATE users SET email_verified = 1 where user_id = ?`;
       await pool.execute(query, [user_id]);
+      req.session.verfication_otp = {};
       return res.status(201).json({
         message: "You are Verfied Hurray...",
         redirecturl: `/user/profile/${user_name}`,
@@ -344,6 +348,7 @@ export const toggelFollow = async (req: Request, res: Response) => {
   }
 };
 
+// For search users
 export const searchUsers = async (req: Request, res: Response) => {
   const query = req.query.q as string;
   if (!query) {
@@ -367,6 +372,8 @@ export const searchUsers = async (req: Request, res: Response) => {
   }
 };
 
+
+// For like and unlike tweet
 export const tweetLikeToggle = async (req: Request, res: Response) => {
   const user_id = (jwt.decode(req.cookies.jwt_token) as JwtPayload).user_id;
   const tweet_id = req.params.tweetId;
@@ -399,6 +406,8 @@ export const tweetLikeToggle = async (req: Request, res: Response) => {
   }
 };
 
+
+// For Follower and Following List
 export const getFollowersFollowingList = async (
   req: Request,
   res: Response,
@@ -425,6 +434,7 @@ export const getFollowersFollowingList = async (
   }
 };
 
+// For Retweet toggle
 export const retweetToggle = async (req: Request, res: Response) => {
   const tweet_id = req.params.tweetId;
   const user_id = (jwt.decode(req.cookies.jwt_token) as JwtPayload).user_id;
@@ -520,6 +530,7 @@ export const deleteTweet = async (req: Request, res: Response) => {
   }
 };
 
+//change Password
 export const changePassword = async (req: Request, res: Response) => {
   const user_id = (jwt.decode(req.cookies.jwt_token) as JwtPayload).user_id;
   const { cuurent_password, new_password } = req.body;
