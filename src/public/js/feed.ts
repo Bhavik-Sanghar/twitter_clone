@@ -191,6 +191,9 @@ document.querySelectorAll(".comment-form").forEach((form) => {
             <a href="/user/profile/${comment.user_name}">
                 <span class="comment-user">${comment.user_name}</span>
             </a>
+             <span>
+           ${(comment.user_name === user_name) ? `<span class="delete-comment" data-comment-id="${comment.comment_id}"> Delete </span>` : ""}
+          </span>
             <span class="comment-text">${comment.content}</span>
         </div>
     </div>
@@ -214,6 +217,8 @@ document.querySelectorAll(".comment-form").forEach((form) => {
   });
 });
 
+
+//submit comment on post button click
 document.addEventListener("click", async (e) => {
   const target = e.target as HTMLElement;
 
@@ -228,6 +233,9 @@ document.addEventListener("click", async (e) => {
     const content = input.value.trim();
 
     if (!content) return showToast("Write something first!", "error");
+    
+    //content length validation
+    if(content.length > 255) return showToast("Comment cannot be more than 255 characters!" , "error");
 
     const response = await fetch("/user/tweets/comments/createComment", {
       method: "POST",
@@ -254,7 +262,7 @@ document.addEventListener("click", async (e) => {
             </a>
             <span class="comment-text">${content}</span>
         </div>
-    </div>
+        </div>
     <span class="comment-time" data-time="${new Date().toISOString()}"></span>
 `;
 
@@ -278,9 +286,36 @@ document.addEventListener("click", async (e) => {
   }
 });
 
+//delete comment
+document.addEventListener("click" , async (e) => {
+  const target = e.target as HTMLElement;
+
+  if(target.classList.contains("delete-comment")){
+    const commentId = target.getAttribute("data-comment-id");
+    const confirmDelete = confirm("Are you sure you want to delete this comment?");
+    if(!confirmDelete) return;
+    const response = await fetch(`/user/comment/${commentId}/delete` , {
+      method : "DELETE",
+      credentials : "include"
+    })
+
+    const res = await response.json();
+
+    if(response.ok){
+      showToast(res.message , "success");
+      target.closest(".comment-item")?.remove();
+    }else{
+      showToast(res.message || "Error deleting comment" , "error")
+    }
+  }
+});
+
 //delete tweet
 document.querySelectorAll(".del_tweet").forEach((span) => {
   span.addEventListener("click", async () => {
+
+    const confirmDelete = confirm("Are you sure you want to delete this tweet?");
+    if (!confirmDelete) return;
     const tweetId = span.getAttribute("data-tweet-id");
     const response = await fetch(`/user/tweet/${tweetId}/delete`, {
       method: "DELETE",
@@ -302,3 +337,22 @@ document.querySelectorAll(".del_tweet").forEach((span) => {
     }
   });
 });
+
+
+//when user click on share it will copy link to clipboard
+document.querySelectorAll(".share-tweet").forEach((ele) => {
+  ele.addEventListener("click", async () => {
+    const tweetLink = ele.getAttribute("data-tweet-link");
+    const link = `${window.location.origin}/user/share/${tweetLink}`;
+
+    try {
+      await navigator.clipboard.writeText(link);
+      showToast("Link copied to clipboard!", "success");
+    } catch (error) {
+      console.error("Failed to copy link:", error);
+      showToast("Failed to copy link.", "error");
+    }
+  });
+});
+
+

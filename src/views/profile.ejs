@@ -64,9 +64,16 @@
                 <h2 class="display-name">
                     <%= user.first_name %>
                         <%= user.last_name %>
-                            <span id="isVerified">
-                                <%- isVerified ? "☑️" : "<span id='verify_email'>Get Verfied $8 Only 😎 </span>" %>
-                            </span>
+                        <!-- <img src="/media/bedge.png" alt="verified badge" class="verified-badge" width="25px" height="25px"> -->
+                        <% if (isOwnProfile) { %>
+                                <span id="isVerified">
+                                    <%- isVerified ? `<img src="/media/bedge_2.png" alt="verified badge" class="verified-badge" width="25px" height="25px">` : "<span id='verify_email'>Get Verfied $8 Only 😎 </span>" %>
+                                </span>
+                            <% } else { %>
+                                <span id="isVerified">
+                                    <%- isVerified ? `<img src="/media/bedge_2.png" alt="verified badge" class="verified-badge" width="25px" height="25px">` : "" %>
+                                </span>
+                            <% } %>
                 </h2>
                 <p class="handle">@<%= user.user_name %>
                 </p>
@@ -116,119 +123,124 @@
         <!-- Tabs for Tweets / Media / Likes (Twitter Style) -->
         <div class="profile-tabs">
             <div class="tab active" id="tweet_tab">Tweets</div>
-            <div class="tab" id="replies_tab">Replies</div>
+            <!-- <div class="tab" id="replies_tab">Replies</div> -->
             <!-- <div class="tab">Media</div>
             <div class="tab">Likes</div> -->
         </div>
 
-        <div class="tweets-list" id="tweets-list">
+        <div class="tweets-list" id="tweet-list" style="display: block;">
             <% tweets.forEach(tweet=> { %>
                 <div class="tweet-card" id="tweet_<%= tweet.tweet_id %>">
+                    <span class="retweet-info">
+                        <%= (tweet.post_type==="retweet" ) ? `↳↰ Reposted BY ${tweet.retweeter_name}` : "" %>
+                    </span>
+                    <br>
                     <div class="tweet-header">
-                        <img src="/<%= user.profile_pic_url %>" alt="Profile" class="tweet-avatar">
+                        <img src="/<%= tweet.profile_pic_url %>" alt="Profile" class="tweet-avatar">
                         <div class="tweet-header-info">
                             <span class="tweet-username">
-                                <%= user.first_name %>
-                                    <%= user.last_name %>
+                                <%= tweet.first_name %>
+                                    <%= tweet.last_name %>
+                                    <%- (tweet.email_verified === 1) ? `<img src="/media/bedge_2.png" alt="verified badge" class="verified-badge" width="25px" height="25px">` : "" %>
                             </span>
-                            <a href="/user/profile/<%=user.user_name%>" target="_blank">
-                                <span class="tweet-handle">@<%= user.user_name %></span>
+                            <a href="/user/profile/<%=tweet.user_name%>" target="_blank">
+                                <span class="tweet-handle">@<%= tweet.user_name %></span>
                             </a>
                         </div>
                         <!-- Edit/Delete stays in header for correct alignment -->
-                        <% if (isOwnProfile) { %>
-                            <div id="tweet-edit-delete-div" style="display: flex;">
-                                <% } else { %>
-                                    <div id="tweet-edit-delete-div" style="display: none;">
-                                        <% } %>
-                                            <div id="tweet-edit-delete-div"
-                                                style="display: <%= tweet.user_id === user.user_id ? 'flex' : 'none' %>;">
-                                                <span id="<%= tweet.tweet_id %>_edit">Edit</span>
-                                                <span class="del_tweet" data-tweet-id="<%= tweet.tweet_id %>"
-                                                    id="<%= tweet.tweet_id %>_del">Delete</span>
-                                            </div>
-                                    </div>
-                            </div>
+                        <div id="tweet-edit-delete-div" style="display: <%= isOwnProfile ? 'flex' : 'none' %>;">
+                            <span id="<%= tweet.tweet_id %>_edit">Edit</span>
+                            <span class="del_tweet" data-tweet-id="<%= tweet.tweet_id %>"
+                                id="<%= tweet.tweet_id %>_del">Delete</span>
+                        </div>
+                        <div id="tweet-share" style="padding-left: 10px;">
+                            <span id="share_tweet_<%tweet.tweet_id%>" class="share-tweet"
+                                data-tweet-link="<%= tweet.user_name %>/<%= tweet.tweet_id %>">🔗</span>
+                        </div>
+                    </div>
 
-                            <p class="tweet-content" id="<%= tweet.tweet_id %>">
-                                <%= tweet.content %>
-                            </p>
+                    <p class="tweet-content" id="<%= tweet.tweet_id %>">
+                        <%= tweet.content %>
+                    </p>
 
-                            <% if (tweet.image_url) { %>
-                                <img src="/<%= tweet.image_url %>" alt="Tweet Image" class="tweet-image">
-                                <% } %>
+                    <% if (tweet.image_url) { %>
+                        <img src="/<%= tweet.image_url %>" alt="Tweet Image" class="tweet-image">
+                        <% } %>
 
-                                    <div class="tweet-actions">
-                                        <!-- Like Form -->
-                                        <form class="like-tweet-form">
-                                            <span class="action-btn like-btn <%= tweet.isLiked ? 'active-like' : '' %>"
-                                                id="like-container-<%= tweet.tweet_id %>">
-                                                <input type="hidden" name="tweet_id" value="<%= tweet.tweet_id %>">
-                                                <button type="submit"
-                                                    style="background: none; border: none; cursor: pointer; color: inherit; font-size: inherit;">
-                                                    <span class="heart-icon">
-                                                        <%= tweet.isLiked ? "❤️" : "🤍" %>
-                                                    </span>
-                                                </button>
-                                                <span class="count_likes">
-                                                    <%= tweet.likes_count %>
-                                                </span>
+                            <div class="tweet-actions">
+                                <!-- Like Form -->
+                                <form class="like-tweet-form">
+                                    <span class="action-btn like-btn <%= tweet.isLiked ? 'active-like' : '' %>"
+                                        id="like-container-<%= tweet.tweet_id %>">
+                                        <input type="hidden" name="tweet_id" value="<%= tweet.tweet_id %>">
+                                        <button type="submit"
+                                            style="background: none; border: none; cursor: pointer; color: inherit; font-size: inherit;">
+                                            <span class="heart-icon">
+                                                <%= tweet.isLiked ? "❤️" : "🤍" %>
                                             </span>
-                                        </form>
+                                        </button>
+                                        <span class="count_likes">
+                                            <%= tweet.likes_count %>
+                                        </span>
+                                    </span>
+                                </form>
 
-                                        <!-- Retweet Form -->
-                                        <form class="retweet-form">
-                                            <span
-                                                class="action-btn retweet-btn <%= tweet.isRetweeted ? 'active-retweet' : '' %>"
-                                                id="retweet-container-<%= tweet.tweet_id %>">
-                                                <input type="hidden" name="tweet_id" value="<%= tweet.tweet_id %>">
-                                                <button type="submit"
-                                                    style="background: none; border: none; cursor: pointer; color: inherit; font-size: inherit;">
-                                                    <span class="retweet-icon">
-                                                        <%= tweet.isRetweeted ? "🔂" : "🔁" %>
-                                                    </span>
-                                                </button>
-                                                <span class="count_retweets">
-                                                    <%= tweet.retweet_count %>
-                                                </span>
+                                <!-- Retweet Form -->
+                                <form class="retweet-form">
+                                    <span
+                                        class="action-btn retweet-btn <%= tweet.isRetweeted ? 'active-retweet' : '' %>"
+                                        id="retweet-container-<%= tweet.tweet_id %>">
+                                        <input type="hidden" name="tweet_id" value="<%= tweet.tweet_id %>">
+                                        <button type="submit"
+                                            style="background: none; border: none; cursor: pointer; color: inherit; font-size: inherit;">
+                                            <span class="retweet-icon">
+                                                <%= tweet.isRetweeted ? "🔂" : "🔁" %>
                                             </span>
-                                        </form> <!-- ADDED CLOSING FORM -->
+                                        </button>
+                                        <span class="count_retweets">
+                                            <%= tweet.retweet_count %>
+                                        </span>
+                                    </span>
+                                </form>
 
-                                        <!-- Comment Form -->
-                                        <form class="comment-form">
-                                            <span class="action-btn comment-btn"
-                                                id="comment-container-<%= tweet.tweet_id %>">
-                                                <input type="hidden" name="tweet_id" value="<%= tweet.tweet_id %>">
-                                                <button type="submit"
-                                                    style="background: none; border: none; cursor: pointer; color: inherit; font-size: inherit;">💬</button>
-                                                <span class="count_comments" id="count_comment_<%= tweet.tweet_id %>">
-                                                    <%= tweet.comment_count %>
-                                                </span>
+                                <!-- Comment Form -->
+                                <% const uniqeId=tweet.shared_id %>
+                                    <form class="comment-form">
+                                        <span class="action-btn comment-btn"
+                                            id="comment-container-<%= tweet.tweet_id %>">
+                                            <input type="hidden" name="tweet_id" value="<%= tweet.tweet_id %>">
+                                            <input type="hidden" name="unique_id" value="<%= uniqeId %>">
+                                            <button type="submit"
+                                                style="background: none; border: none; cursor: pointer; color: inherit; font-size: inherit;">💬</button>
+                                            <span class="count_comments" id="count_comment_<%= tweet.tweet_id %>">
+                                                <%= tweet.comment_count %>
                                             </span>
-                                        </form>
-                                    </div> <!-- ADDED CLOSING ACTIONS DIV -->
-
-                                    <div class="comment-section" id="comment-section-<%= tweet.tweet_id %>"
+                                        </span>
+                                    </form>
+                                    <div class="comment-section"
+                                        id="comment-section-<%= tweet.tweet_id %>-<%= uniqeId %>"
                                         style="display: none;">
                                         <div class="comment-input-area">
                                             <input type="text" placeholder="Write a reply..." class="comment-input"
-                                                id="comment-input-<%= tweet.tweet_id %>">
-                                            <button type="button" class="reply-btn" id="reply-btn-<%= tweet.tweet_id %>"
-                                                data-tweet-id="<%= tweet.tweet_id %>">
+                                                id="comment-input-<%= tweet.tweet_id %>-<%= uniqeId %>">
+                                            <button type="button" class="reply-btn"
+                                                id="reply-btn-<%= tweet.tweet_id %>-<%= uniqeId %>"
+                                                data-unique-id="<%= uniqeId %>" data-tweet-id="<%= tweet.tweet_id %>">
                                                 Reply
                                             </button>
                                         </div>
-                                        <div class="comments-list" id="comments-list-<%= tweet.tweet_id %>">
+                                        <div class="comments-list"
+                                            id="comments-list-<%= tweet.tweet_id %>-<%= uniqeId %>">
                                             <!-- Comments load here -->
                                         </div>
                                     </div>
+                            </div>
+                            <div class="tweet-meta">
+                                <span class="tweet-time" data-time="<%= tweet.created_at %>"></span>
+                            </div>
 
-                                    <div class="tweet-meta">
-                                        <span class="tweet-time" data-time="<%= tweet.created_at %>"></span>
-                                    </div>
-                    </div>
-                    <% }) %>
                 </div>
+                <% }) %>
         </div>
 
         <div class="tweet-replies" id="tweet-replies" style="display: none;">
@@ -238,6 +250,10 @@
         <script>
             const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
             document.getElementById('user-tz').innerText = userTimezone;
+        </script>
+        <script>
+            const user_name = "<%= user ? user.user_name : '' %>";
+            const user_id = "<%= user ? user.user_id : '' %>";
         </script>
         <script src="/js/feed.js"></script>
         <script src="/js/profile.js"></script>

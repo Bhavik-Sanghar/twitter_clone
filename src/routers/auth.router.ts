@@ -42,7 +42,6 @@ router.get("/getcaptcha", async (req: Request, res: Response) => {
     expiresAt: Date.now() + 10 * 60 * 1000, 
   };
 
-  console.log(req.session.captcha);
   res.type("svg");
   res.send(captcha_data.data);
 });
@@ -63,6 +62,7 @@ router.get("/", (req: Request, res: Response) => {
   return res.render("login");
 });
 
+//Route to login page
 router.get("/login", (req: Request, res: Response) => {
   if (req.cookies.jwt_token) {
     return res.redirect("/user");
@@ -81,7 +81,7 @@ router.post("/signup", verifyCaptcha ,registerUser);
 
 
 //Route to login user with Credentials
-router.post("/login", loginUser);
+router.post("/login", verifyCaptcha ,loginUser);
 
 
 //Route to logout user
@@ -98,7 +98,7 @@ router.get("/forgot-password", (req: Request, res: Response) => {
 router.post("/forgot-password", valOtpage, getOTP);
 
 
-//Route to resend OTP/ resetPassword link 
+//Route to  resetPassword page here it check if reset token is valid or not then render page with otp expire time
 router.get("/reset-password", authForgetPaths, resetPasswordLink);
 
 
@@ -109,10 +109,11 @@ router.get("/emailPage", authForgetPaths, (req: Request, res: Response) => {
 });
 
 
-//
+//route to reset password with otp and new password
 router.post("/reset-password", authForgetPaths, resetPassword);
 
+
+//Route to resend OTP
 router.post("/resend-otp", authForgetPaths, resendOTP);
 
 export default router;
-``;

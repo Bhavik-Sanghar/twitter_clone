@@ -27,6 +27,15 @@
       ).innerHTML = ``;
     }
 
+    const captcha_inp = (document.getElementById("captcha_inp") as HTMLInputElement).value.trim();
+    
+    if(!captcha_inp){
+        isVal = false;
+        (document.getElementById("captcha_error") as HTMLParagraphElement).innerHTML = `Please enter the captcha..`;
+    }else{
+        (document.getElementById("captcha_error") as HTMLParagraphElement).innerHTML = ``;
+    }
+
     if(isVal){
         const response = await fetch("/login" , {
             method : "POST",
@@ -36,7 +45,8 @@
             body : JSON.stringify({
                 identifier : identifier,
                 password : password,
-                remember_me : remember_me
+                remember_me : remember_me,
+                captcha_inp : captcha_inp
             })
         })
 
@@ -44,7 +54,10 @@
 
         if(response.status == 201){
             window.location.href = `${res.redirecturl}`;
-        }else{
+        }else if(response.status == 400){
+            (document.getElementById("captcha_error") as HTMLParagraphElement).innerHTML = `${res.message}`;
+        }
+        else{
             (document.getElementById("login_error") as HTMLParagraphElement).innerHTML = `${res.message}`
         }
     }

@@ -1,11 +1,9 @@
 import { Request, Response } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt, { Jwt, JwtPayload } from "jsonwebtoken";
 import pool from "../configs/db.config";
 import { RowDataPacket } from "mysql2";
-import { ApiResponse } from "../types";
 import bcypt from "bcrypt";
-
-import fs from "fs";
+import session from "express-session";
 
 import {
   fetchUserByUsername,
@@ -25,15 +23,20 @@ import {
   featchIsretweetedByUser,
   fetchCommentsCountByTweetIds,
   fetchCommentsByTweetId,
+  fetchverficationStatus,
 } from "../services/user.service";
 
+// For home page feed rendering with tweets and retweets both and also suggested users
 export const homePage = async (req: Request, res: Response) => {
   const user_id = (jwt.decode(req.cookies.jwt_token) as JwtPayload).user_id;
+  //fetch user info for navbar and also for suggestions and feed
   const user = await fetchUserById(user_id);
+  //fetch home feed data with tweets and retweets both and also shared_id for retweets and tweets both and also post type to differntiate between them
   const feed = await homeFeed(user_id);
+  //fetch suggested users for current user
   const suggestedUsers = await suggestions(user_id);
 
-  //Tweet like
+  //Tweet Like Map to check how many likes for each tweet in feed and also isLiked by current user or not
   const likesMap = await fetchLikesByTweetIds(
     feed.map((tweet) => tweet.tweet_id),
   );
@@ -51,7 +54,7 @@ export const homePage = async (req: Request, res: Response) => {
     (tweet as any).isLiked = islikesMap[tweet.tweet_id] || false;
   });
 
-  //Tweet Retweet
+  //Tweet Retweet Map to check how many retweets for each tweet in feed and also isRetweeted by current user or not
   const retweetMap = await fetchRetweetByTweetsId(
     feed.map((tweet) => tweet.tweet_id),
   );
@@ -69,7 +72,7 @@ export const homePage = async (req: Request, res: Response) => {
     (tweet as any).isRetweeted = isRetweetedMap[tweet.tweet_id] || false;
   });
 
-  //Tweet Comments
+  //Tweet Comments Count Map to check how many comments for each tweet in feed
   const commentMap = await fetchCommentsCountByTweetIds(
     feed.map((tweet) => tweet.tweet_id),
   );
@@ -84,6 +87,7 @@ export const homePage = async (req: Request, res: Response) => {
   });
 };
 
+// For profile
 export const getProfile = async (req: Request, res: Response) => {
   const currentUserId = (jwt.decode(req.cookies.jwt_token) as JwtPayload)
     .user_id;
@@ -100,7 +104,8 @@ export const getProfile = async (req: Request, res: Response) => {
   //Check own profile
   const isOwnProfile = currentUserId === profileUser.user_id;
 
-  const [followers_count, following_count, tweet_count, tweets, isFollowing] =
+  //fetching followers count, following count, tweets count, tweets and also check isFollowing for current user
+  const [followers_count, following_count, tweet_count, tweets, isFollowing , isVerified] =
     await Promise.all([
       fetchFollowerCount(profileUser.user_id),
       fetchFollowingCount(profileUser.user_id),
@@ -109,9 +114,10 @@ export const getProfile = async (req: Request, res: Response) => {
       isOwnProfile
         ? Promise.resolve(false)
         : checkIsFollowing(currentUserId, profileUser.user_id),
+        fetchverficationStatus(profileUser.user_id)
     ]);
 
-  //Tweeet Like
+  //Tweeet Like and isLiked by current user
   const likesMap = await fetchLikesByTweetIds(
     (await fetchTweetsByUser(profileUser.user_id)).map(
       (tweet) => tweet.tweet_id,
@@ -133,7 +139,7 @@ export const getProfile = async (req: Request, res: Response) => {
     (tweet as any).isLiked = islikesMap[tweet.tweet_id] || false;
   });
 
-  //Tweet Retweet
+  //Tweet Retweet and isRetweeted by current user
   const retweetMap = await fetchRetweetByTweetsId(
     tweets.map((tweet) => tweet.tweet_id),
   );
@@ -159,7 +165,7 @@ export const getProfile = async (req: Request, res: Response) => {
     (tweet) => ((tweet as any).comment_count = commentMap[tweet.tweet_id] || 0),
   );
 
-  const isVerified = false;
+
 
   res.render("profile", {
     user: profileUser,
@@ -173,6 +179,7 @@ export const getProfile = async (req: Request, res: Response) => {
   });
 };
 
+// For render edit profile page with current user data
 export const getEditProfile = async (req: Request, res: Response) => {
   const currentUserId = (jwt.decode(req.cookies.jwt_token) as JwtPayload)
     .user_id;
@@ -181,13 +188,60 @@ export const getEditProfile = async (req: Request, res: Response) => {
   res.render("profile_edit", { user });
 };
 
+//For Verification Page
+export const getVerifybedgePage = async (req: Request, res: Response) => {
+  const verfication_otp = Math.floor(
+    100000 + Math.random() * 900000,
+  ).toString();
+  req.session.verfication_otp = {
+    otp: verfication_otp,
+    expiresAt: Date.now() + 10 * 60 * 1000,
+  };
+  res.render("verify_email", { otp: verfication_otp });
+};
+
+export const getVerfiy = async (req: Request, res: Response) => {
+  const user_id = (jwt.decode(req.cookies.jwt_token) as JwtPayload).user_id;
+  const user_name = (jwt.decode(req.cookies.jwt_token) as JwtPayload).user_name;
+  const { otp, password } = req.body;
+  const stored_otp = req.session.verfication_otp?.otp;
+  try {
+    if (!stored_otp) {
+      return res.status(500).json({ message: "OTP is Expire try again" });
+    }
+
+    if (otp !== stored_otp) {
+      return res.status(400).json({ message: "OTP is WRONG try again" });
+    }
+    const [data] = await pool.execute<RowDataPacket[]>(
+      `SELECT user_password from users WHERE user_id = ?`,
+      [user_id],
+    );
+    const stored_password = data[0]!.user_password;
+    const isMatch = await bcypt.compare(password, stored_password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Current Password is Wrong" });
+    } else {
+      const query = `UPDATE users SET email_verified = 1 where user_id = ?`;
+      await pool.execute(query, [user_id]);
+      return res.status(201).json({
+        message: "You are Verfied Hurray...",
+        redirecturl: `/user/profile/${user_name}`,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something Went Wrong try again" });
+  }
+};
+
+// For Update user profile
 export const updateUserProfile = async (req: Request, res: Response) => {
   const { first_name, last_name, bio, location, website, dob } = req.body;
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
   const token = jwt.decode(req.cookies.jwt_token) as JwtPayload;
   const { user_id, user_name } = token;
-
 
   const updates: Record<string, any> = {
     first_name,
@@ -200,6 +254,7 @@ export const updateUserProfile = async (req: Request, res: Response) => {
     cover_pic_url: files?.["banner"]?.[0]?.path,
   };
 
+  // Remove undefined fields from updates
   const updateThings = Object.keys(updates).filter(
     (key) => updates[key] !== undefined,
   );
@@ -210,12 +265,12 @@ export const updateUserProfile = async (req: Request, res: Response) => {
       .json({ success: false, message: "Nothing to update" });
   }
 
-  const setClause = updateThings.map((field) => `${field} = ?`).join(", ");
+  const placeHolder = updateThings.map((field) => `${field} = ?`).join(", ");
   const values = updateThings.map((field) => updates[field]);
 
   values.push(user_id);
 
-  const finalQuery = `UPDATE users SET ${setClause} WHERE user_id = ?;`;
+  const finalQuery = `UPDATE users SET ${placeHolder} WHERE user_id = ?;`;
 
   try {
     await pool.execute(finalQuery, values);
@@ -231,6 +286,7 @@ export const updateUserProfile = async (req: Request, res: Response) => {
   }
 };
 
+// For create new tweet by user
 export const tweetPost = async (req: Request, res: Response) => {
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
   const { tweet_content } = req.body;
@@ -264,6 +320,7 @@ export const tweetPost = async (req: Request, res: Response) => {
   }
 };
 
+// For follow and unfollow user
 export const toggelFollow = async (req: Request, res: Response) => {
   const user_id = req.params.userid;
   const user_name = req.params.username;
@@ -492,11 +549,10 @@ export const changePassword = async (req: Request, res: Response) => {
   } catch (error) {
     console.log("Server side error while change password", error);
     res.status(500).json({
-      message: "Error While Changeing Password"
+      message: "Error While Changeing Password",
     });
   }
 };
-
 
 //shared tweet page
 export const shareTweetPage = async (req: Request, res: Response) => {
@@ -525,5 +581,31 @@ export const shareTweetPage = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching tweet for sharing:", error);
     res.status(500).send("An error occurred while fetching the tweet");
+  }
+};
+
+//delete Comment
+export const deleteComment = async (req: Request, res: Response) => {
+  const rawCommentId = req.params.commentId;
+  const commentId = Array.isArray(rawCommentId)
+    ? rawCommentId[0]
+    : rawCommentId;
+  if (!commentId) {
+    return res.status(400).json({ message: "commentID param is required" });
+  }
+
+  const comment_id = parseInt(commentId, 10);
+  if (Number.isNaN(comment_id)) {
+    return res.status(400).json({ message: "Invalid commentID parameter" });
+  }
+
+  try {
+    await pool.execute("DELETE FROM comments WHERE comment_id = ?", [
+      comment_id,
+    ]);
+    res.status(201).json({ message: "Comment deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting comment:", error);
+    res.status(500).json({ message: "Error while deleting the comment" });
   }
 };

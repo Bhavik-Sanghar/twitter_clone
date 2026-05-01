@@ -2,22 +2,23 @@ import { Request, Response } from "express";
 import pool from "../configs/db.config";
 import { ApiResponse } from "../types";
 import bcypt from "bcrypt";
+import svgCaptcha from "svg-captcha";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
-//Helper function for captcha generation
-var svgCaptcha = require("svg-captcha");
 
+//Helper function for captcha generation
 export const captcha = () => {
   return svgCaptcha.createMathExpr({
     mathMin: 2,
     mathMax: 7,
-    mathOperator: "+",
+    mathOperator: "+", // we can also add - 
+    noise: 10,
+    color: true,
+    background: "#cc9966"
   });
 };
 
-
-
-
+// For check is email exist or not
 const isUserEmailExist = async (req: Request, res: Response) => {
   /**
    * Here we try to find if user email is alrdy in DB if we found then we return false
@@ -51,6 +52,7 @@ const isUserEmailExist = async (req: Request, res: Response) => {
   }
 };
 
+// For check is phone exist or not
 const isUserPhoneExist = async (req: Request, res: Response) => {
   /**
    * Here we try to find if user Phone is alrdy in DB if we found then we return false
@@ -84,6 +86,7 @@ const isUserPhoneExist = async (req: Request, res: Response) => {
   }
 };
 
+// For check is user name exist or not
 const isUserUserNameExist = async (req: Request, res: Response) => {
   /**
    * Here we try to find if user Phone is alrdy in DB if we found then we return false
@@ -124,8 +127,10 @@ const registerUser = async (req: Request, res: Response) => {
   const hashPassword = await bcypt.hash(password, 10);
 
   const query = `
-INSERT INTO users(first_name , last_name , user_name , email , phone , user_password , time_zone) values (? , ? , ? , ? , ? , ? , ?);
+  INSERT INTO users(first_name , last_name , user_name , email , phone , user_password , time_zone) values (? , ? , ? , ? , ? , ? , ?);
 `;
+
+//backend validation for existing email , phone and user name before registration of new user to prevent race condition
   try {
     const [data1] = await pool.execute(
       "SELECT user_id from users WHERE email = ?",
@@ -190,6 +195,8 @@ INSERT INTO users(first_name , last_name , user_name , email , phone , user_pass
   }
 };
 
+
+// Login User
 const loginUser = async (req: Request, res: Response) => {
   const { identifier, password, remember_me } = req.body;
 
@@ -250,6 +257,8 @@ const loginUser = async (req: Request, res: Response) => {
   }
 };
 
+
+// For Genrate OTP and send to user for reset password for first step of forgot password
 const  getOTP = async (req: Request, res: Response) => {
   const { email } = req.body;
 
@@ -269,6 +278,7 @@ const  getOTP = async (req: Request, res: Response) => {
         { expiresIn: "2m" },
       );
 
+      //cookie for reset password token which include email and otp and expire in 2 min and cookie expire time is 10 min
       res.cookie("reset_token", reset_token, {
         maxAge: 1000 * 60 * 10,
       });
@@ -295,6 +305,7 @@ const  getOTP = async (req: Request, res: Response) => {
   }
 };
 
+// For reset password link genrate and render reset password page with otp expire time 
 const resetPasswordLink = (req: Request, res: Response) => {
   const token = req.cookies.reset_token;
   
@@ -307,6 +318,7 @@ const resetPasswordLink = (req: Request, res: Response) => {
   return res.render("reset_password", { expiresAt: decoded.exp * 1000 });
 };
 
+// For resend OTP when user click on resend OTP button in reset password page
 const resendOTP = async (req: Request, res: Response) => {
   const token = req.cookies.reset_token;
   const response: ApiResponse = {
@@ -348,6 +360,7 @@ const resendOTP = async (req: Request, res: Response) => {
   }
 };
 
+// For reset password with otp and new password
 const resetPassword = async (req: Request, res: Response) => {
   const { otp, password } = req.body;
   const decode = jwt.decode(
@@ -400,6 +413,7 @@ const resetPassword = async (req: Request, res: Response) => {
 };
 
 
+// For logout user
 const logoutUser = (req : Request , res : Response ) => {
   try {
     const token = req.cookies.jwt_token;

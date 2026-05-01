@@ -72,6 +72,26 @@ removeImg.addEventListener("click", () => {
   imageInput.value = "";
 });
 
+const contentInput = document.querySelector(
+  'input[name="tweet_content"]',
+) as HTMLTextAreaElement;
+
+contentInput.addEventListener("input", () => {
+  const charCount = document.getElementById(
+    "input-char-count",
+  ) as HTMLSpanElement;
+  const remaining = 255 - contentInput.value.length;
+  if (remaining < 0) {
+    showToast("Tweet cannot be more than 255 characters!", "error");
+    charCount.textContent = `-${-remaining} characters over limit`;
+    charCount.style.color = "red";
+    contentInput.value = contentInput.value.slice(0, 255);
+  } else {
+    charCount.textContent = `${remaining} characters remaining`;
+    charCount.style.color = "#555";
+  }
+});
+
 (document.getElementById("tweetForm") as HTMLFormElement).addEventListener(
   "submit",
   async (e) => {
@@ -125,9 +145,7 @@ removeImg.addEventListener("click", () => {
     }
 
     try {
-      const response = await fetch(
-        `/user/search/users?q=${query}`,
-      );
+      const response = await fetch(`/user/search/users?q=${query}`);
       const results = await response.json();
 
       resultsContainer.innerHTML = results
@@ -138,42 +156,25 @@ removeImg.addEventListener("click", () => {
             <b>
               ${user.first_name} ${user.last_name}
              <span>@${user.user_name}</span>
+            </b>
           </b>
     </div>
-`;}).join("");
+`;
+        })
+        .join("");
 
-
-        resultsContainer.querySelectorAll(".search_result_item").forEach((item) => {
-            item.addEventListener("click", () => {
+      resultsContainer
+        .querySelectorAll(".search_result_item")
+        .forEach((item) => {
+          item.addEventListener("click", () => {
             const username = item.getAttribute("data-username");
             if (username) {
               window.location.href = `/user/profile/${username}`;
             }
           });
         });
-    } 
-    
-    
-    catch (error) {
+    } catch (error) {
       console.error("Search error:", error);
     }
   },
 );
-
-
-//when user click on share it will copy link to clipboard
-document.querySelectorAll(".share-tweet").forEach((ele) => {
-  ele.addEventListener("click", async () => {
-    const tweetLink = ele.getAttribute("data-tweet-link");
-    const link = `${window.location.origin}/user/share/${tweetLink}`;
-
-    try {
-      await navigator.clipboard.writeText(link);
-      showToast("Link copied to clipboard!", "success");
-    } catch (error) {
-      console.error("Failed to copy link:", error);
-      showToast("Failed to copy link.", "error");
-    }
-  });
-});
-

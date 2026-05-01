@@ -10,6 +10,8 @@
 </head>
 
 <body>
+
+
     <div class="container">
         <!-- Left Sidebar -->
         <nav class="sidebar">
@@ -25,8 +27,9 @@
         <main class="feed">
             <header>
                 <h1>Hola 👋 <%= user.first_name %>
+                        <div id="toast-container"></div>
+
                 </h1>
-                <div id="toast-container"></div>
                 <div class="tweet-composer">
                     <div class="avatar-placeholder">
                         <img src="/<%= user.profile_pic_url %>" alt="Profile">
@@ -37,12 +40,14 @@
                         <div id="image-preview-container" style="display: none;">
                             <img id="image-preview" src=""
                                 style="max-width: 100%; border-radius: 15px; margin-bottom: 10px;">
-                            <button type="button" id="remove-img">✕</button>
+                            <button type="button" id="remove-img"
+                                style="position: absolute; z-index: 9999; cursor: pointer;">✕</button>
                         </div>
 
                         <div class="composer-actions">
                             <label for="tweet_img" style="cursor: pointer; color: #1d9bf0;">🖼️ Add Photo</label>
                             <input type="file" id="tweet_img" name="tweet_img" accept="image/*" style="display: none;">
+                            <span id="input-char-count"></span>
                             <button type="submit" class="tweet-btn">Post</button>
                         </div>
                     </form>
@@ -64,6 +69,7 @@
                                 <span class="tweet-username">
                                     <%= tweet.first_name %>
                                         <%= tweet.last_name %>
+                                         <%- (tweet.email_verified === 1) ? `<img src="/media/bedge_2.png" alt="verified badge" class="verified-badge" width="25px" height="25px">` : "" %>
                                 </span>
                                 <a href="/user/profile/<%=tweet.user_name%>" target="_blank">
                                     <span class="tweet-handle">@<%= tweet.user_name %></span>
@@ -77,7 +83,8 @@
                                     id="<%= tweet.tweet_id %>_del">Delete</span>
                             </div>
                             <div id="tweet-share" style="padding-left: 10px;">
-                                <span id="share_tweet_<%tweet.tweet_id%>" class="share-tweet" data-tweet-link="<%= tweet.user_name %>/<%= tweet.tweet_id %>">🔗</span>
+                                <span id="share_tweet_<%tweet.tweet_id%>" class="share-tweet"
+                                    data-tweet-link="<%= tweet.user_name %>/<%= tweet.tweet_id %>">🔗</span>
                             </div>
                         </div>
 
@@ -194,6 +201,7 @@
                                 <a href="/user/profile/<%=element.user_name%>" target="_blank"><span
                                         class="suggested-handle">@<%= element.user_name %></span></a>
                             </div>
+                            
                         </div>
                         <% }); %>
                 </div>

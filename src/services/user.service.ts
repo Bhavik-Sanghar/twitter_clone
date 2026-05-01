@@ -37,11 +37,40 @@ export const fetchFollowingCount = async (user_id: number) => {
   return data[0]?.count;
 };
 
-// For fetching tweets by a user, with likes and retweets count, we can do a single query with JOINs and subqueries;
+// For fetching tweets and retweet by a user
 export const fetchTweetsByUser = async (user_id: number) => {
   const [data] = await pool.execute<RowDataPacket[]>(
-    "SELECT t.* FROM tweets t WHERE t.user_id = ? ORDER BY t.created_at DESC",
-    [user_id],
+     ` SELECT 
+        t.tweet_id,
+        t.user_id AS shared_id, 
+        t.content, 
+        t.image_url, 
+        t.created_at AS created_at, 
+        NULL AS retweeter_name,
+        u.user_name, u.profile_pic_url, u.first_name, u.last_name,u.email_verified,
+        'tweet' AS post_type 
+      FROM tweets t 
+      JOIN users u ON u.user_id = t.user_id 
+      WHERE t.user_id = ? 
+      
+      UNION ALL
+      
+      SELECT
+        t.tweet_id,
+        r.user_id AS shared_id,
+        t.content,
+        t.image_url,
+        r.created_at AS created_at,
+        ru.user_name AS retweeter_name, 
+        u.user_name, u.profile_pic_url, u.first_name, u.last_name,u.email_verified,
+        'retweet' AS post_type 
+      FROM retweets r 
+      JOIN tweets t ON t.tweet_id = r.original_tweet_id 
+      JOIN users u ON u.user_id = t.user_id 
+      JOIN users ru ON r.user_id = ru.user_id
+      WHERE r.user_id = ? 
+      ORDER BY created_at DESC`,
+    [user_id, user_id],
   );
   return data;
 };
@@ -119,7 +148,8 @@ export const featchIslikedByUser = async (
 //   return data;
 // };
 
-export const homeFeed = async(user_id : number)=> {
+// Updated home feed to include retweets and also shared_id for retweets and tweets both and also post type to differntiate between them
+export const homeFeed = async (user_id: number) => {
   const [data] = await pool.execute<RowDataPacket[]>(
     `
     SELECT t.tweet_id, 
@@ -129,7 +159,7 @@ export const homeFeed = async(user_id : number)=> {
         t.image_url, 
         t.created_at AS created_at, 
         'tweet' AS post_type,
-        u.user_name, u.profile_pic_url, u.first_name, u.last_name,
+        u.user_name, u.profile_pic_url, u.first_name, u.last_name,u.email_verified,
         NULL AS retweeter_name FROM tweets t JOIN users u ON u.user_id = t.user_id 
         WHERE t.user_id IN ( SELECT following_id FROM follows WHERE follower_id = ? UNION SELECT ? )
 
@@ -142,7 +172,7 @@ export const homeFeed = async(user_id : number)=> {
         t.image_url, 
         r.created_at AS created_at, 
         'retweet' AS post_type,
-        u.user_name, u.profile_pic_url, u.first_name, u.last_name,
+        u.user_name, u.profile_pic_url, u.first_name, u.last_name,u.email_verified,
         ru.user_name AS retweeter_name 
         FROM retweets r
         JOIN tweets t ON t.tweet_id = r.original_tweet_id
@@ -151,19 +181,18 @@ export const homeFeed = async(user_id : number)=> {
         WHERE r.user_id IN ( SELECT following_id FROM follows WHERE follower_id = ? UNION SELECT ? )
 
         ORDER  BY created_at DESC
-    ` , [user_id , user_id , user_id , user_id]
+    `,
+    [user_id, user_id, user_id, user_id],
   );
   return data;
-}
+};
 
 // For suggested users
 export const suggestions = async (user_id: number) => {
   const [data] = await pool.execute<RowDataPacket[]>(
     `SELECT user_id, user_name, profile_pic_url, first_name, last_name
      FROM users
-     WHERE user_id != ? AND user_id NOT IN (
-       SELECT following_id FROM follows WHERE follower_id = ?
-     )
+     WHERE user_id != ? AND user_id NOT IN (SELECT following_id FROM follows WHERE follower_id = ?)
      ORDER BY RAND()
      LIMIT 5`,
     [user_id, user_id],
@@ -174,11 +203,16 @@ export const suggestions = async (user_id: number) => {
 //For Follower list
 export const fetchFollowerList = async (user_id: number) => {
   const [data] = await pool.execute<RowDataPacket[]>(
-    `SELECT follower_id, user_name, profile_pic_url, first_name, last_name
-   FROM follows f
-   JOIN users u ON f.follower_id = u.user_id
-   WHERE f.following_id = ?`,
-    [user_id],
+    `SELECT 
+      follower_id, 
+      user_name, 
+      profile_pic_url, 
+      first_name, 
+      last_name
+    FROM follows f
+    JOIN users u ON f.follower_id = u.user_id
+    WHERE f.following_id = ?`,
+  [user_id],
   );
   return data;
 };
@@ -250,12 +284,21 @@ export const fetchCommentsCountByTweetIds = async (tweetIds: number[]) => {
   return commentMap;
 };
 
-
 //fetch commets by tweetid
-export const fetchCommentsByTweetId = async (tweetID : number) => {
+export const fetchCommentsByTweetId = async (tweetID: number) => {
   const [data] = await pool.execute<RowDataPacket[]>(
-    `SELECT c.content , u.user_name , u.profile_pic_url , c.parent_id  , c.created_at from comments c JOIN users u ON u.user_id = c.user_id where tweet_id = ? ORDER BY c.created_at DESC` , [tweetID]
+    `SELECT c.comment_id , c.content , u.user_name , u.profile_pic_url , c.parent_id  , c.created_at from comments c JOIN users u ON u.user_id = c.user_id where tweet_id = ? ORDER BY c.created_at DESC`,
+    [tweetID],
   );
-
   return data;
+};
+
+
+//To check is user email is verifed or not 
+export const fetchverficationStatus = async(user_id : number) => {
+  const [data] = await pool.execute<RowDataPacket[]>(
+    `SELECT email_verified from users WHERE user_id = ? AND email_verified = 1`
+   , [user_id]);
+
+  return (data.length > 0);
 }

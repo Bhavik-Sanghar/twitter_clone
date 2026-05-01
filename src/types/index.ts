@@ -13,6 +13,10 @@ declare module "express-session" {
     captcha: {
       text?: string;
       expiresAt?: number;
-    };
+    },
+    verfication_otp : {
+      otp ?: string,
+      expiresAt?:number
+    }
   }
 }

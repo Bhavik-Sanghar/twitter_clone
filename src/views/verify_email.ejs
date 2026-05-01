@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Verification Badge</title>
+    <link rel="stylesheet" href="/css/verify_email.css">
+</head>
+<body>
+    <div id="main">
+        <button class="back-btn" onclick="window.history.back()">←</button>
+        <h1>Get Verification Badge</h1>
+         <div id="toast-container"></div>
+        <p><strong>Your OTP: </strong></p>
+        <div id="display-otp" class="otp-code">
+            <%= otp %>
+        </div>
+    </div>
+    <div id="verification_form">
+        <form id="verify-email-form">
+            <label for="otp">Enter OTP:</label>
+            <input type="text" id="otp" name="otp" required>
+            <p id="otp_error"></p>
+            <label for="password">Enter Your current Password:</label>
+            <input type="password" id="password" name="password" required>
+            <p id="password_error"></p>
+            <img src="/getcaptcha" alt="Image of captcha" id="captcha_image">
+            <input type="text" name="captcha_inp" id="captcha_inp">
+            <p class="error" id="captcha_error"></p>
+            <p id="require_error"></p>
+            <button type="submit">Verify</button>
+        </form>
+    </div>
+</body>
+<script src="/js/feed.js"></script>
+<script src="/js/verify_email.js"></script>
+</html>
