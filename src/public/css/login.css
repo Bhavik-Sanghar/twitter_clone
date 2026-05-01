@@ -1,90 +1,202 @@
+/* =========================================================
+   login.css — Twitter Clone Login Page
+   ========================================================= */
+
+:root {
+  --blue: #1d9bf0;
+  --blue-hover: #1a8cd8;
+  --text: #0f1419;
+  --muted: #536471;
+  --border: #cfd9de;
+  --bg: #f7f9f9;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: #f7f9f9;
-  margin: 0;
+  min-height: 100vh;
+  padding: 20px;
 }
+
+/* --- Card --- */
 .login-container {
-  background: white;
-  padding: 30px;
+  background: #fff;
+  padding: 36px 32px;
   border-radius: 16px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   width: 100%;
   max-width: 400px;
 }
+
 h2 {
   text-align: center;
-  margin-bottom: 25px;
+  font-size: 22px;
   font-weight: 800;
-}
-.form-group {
-  margin-bottom: 15px;
-}
-input[type="text"],
-input[type="password"] {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #cfd9de;
-  border-radius: 4px;
-  box-sizing: border-box;
-  font-size: 16px;
+  margin-bottom: 24px;
+  color: var(--text);
 }
 
-/* Remember Me & Forgot Password Row */
+/* --- Form Groups --- */
+.form-group {
+  margin-bottom: 14px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 16px;
+  font-family: var(--font);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 1px var(--blue);
+}
+
+input::placeholder {
+  color: var(--muted);
+}
+
+/* --- Captcha --- */
+#captcha_image {
+  display: block;
+  margin: 6px 0;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+#captcha_inp {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 15px;
+  font-family: var(--font);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+#captcha_inp:focus {
+  border-color: var(--blue);
+}
+
+.error {
+  color: #f4212e;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* --- Options Row (Remember me + Forgot) --- */
 .options-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin: 4px 0 18px;
   font-size: 14px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
+
 .checkbox-group {
   display: flex;
   align-items: center;
-  gap: 5px;
-  color: #536471;
+  gap: 6px;
+  color: var(--muted);
   cursor: pointer;
+  user-select: none;
 }
+
 .forgot-link {
-  color: #1d9bf0;
+  color: var(--blue);
   text-decoration: none;
+  font-size: 14px;
 }
+
 .forgot-link:hover {
   text-decoration: underline;
 }
 
-button {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 9999px;
-  font-weight: bold;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background 0.2s;
-}
-.btn-login {
-  background-color: #0f1419;
-  color: white;
-  margin-top: 10px;
-}
-.btn-login:hover {
-  background-color: #272c30;
+/* --- Error Messages --- */
+#require_error,
+#login_error,
+#captcha_error {
+  color: #f4212e;
+  font-size: 13px;
+  min-height: 1em;
+  margin-bottom: 8px;
 }
 
+/* --- Button --- */
+.btn-login {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: var(--text);
+  color: #fff;
+  border: none;
+  border-radius: 9999px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 4px;
+}
+
+.btn-login:hover {
+  background: #272c30;
+}
+
+/* --- Footer --- */
 .footer-text {
   text-align: center;
-  margin-top: 25px;
-  color: #536471;
+  margin-top: 24px;
+  color: var(--muted);
   font-size: 14px;
 }
+
 .signup-link {
-  color: #1d9bf0;
+  color: var(--blue);
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 700;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}
+
+/* --- Responsive --- */
+@media (max-width: 440px) {
+  .login-container {
+    padding: 28px 20px;
+    border-radius: 12px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
 }
