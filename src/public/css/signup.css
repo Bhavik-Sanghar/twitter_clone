@@ -1,71 +1,201 @@
+/* =========================================================
+   signup.css — Twitter Clone Sign Up Page
+   ========================================================= */
+
+:root {
+  --blue: #1d9bf0;
+  --blue-hover: #1a8cd8;
+  --text: #0f1419;
+  --muted: #536471;
+  --border: #cfd9de;
+  --bg: #f7f9f9;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: #f7f9f9;
-  margin: 0;
+  min-height: 100vh;
+  padding: 24px 20px;
 }
+
+/* --- Card --- */
 .signup-container {
-  background: white;
-  padding: 30px;
+  background: #fff;
+  padding: 36px 32px;
   border-radius: 16px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   width: 100%;
-  max-width: 400px;
+  max-width: 440px;
 }
+
 h2 {
   text-align: center;
+  font-size: 22px;
+  font-weight: 800;
   margin-bottom: 20px;
+  color: var(--text);
 }
+
+/* --- Form Groups --- */
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 14px;
 }
-input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #cfd9de;
-  border-radius: 4px;
-  box-sizing: border-box;
-  font-size: 16px;
-}
+
+/* Side-by-side first/last name */
 .row {
   display: flex;
-  gap: 10px;
+  gap: 12px;
 }
-button {
+
+.row .form-group {
+  flex: 1;
+  min-width: 0;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 15px;
+  font-family: var(--font);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="tel"]:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 1px var(--blue);
+}
+
+input::placeholder {
+  color: var(--muted);
+}
+
+/* --- Captcha --- */
+#captcha_image {
+  display: block;
+  margin: 6px 0;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+#reload {
+  font-size: 13px;
+  color: var(--blue);
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+
+#reload:hover {
+  text-decoration: underline;
+}
+
+/* --- Inline Error Messages --- */
+#required_error,
+#submit_error,
+#captcha_error,
+#user_name_error,
+#email_error,
+#phone_error,
+#password_error,
+#cpassword_error {
+  color: #f4212e;
+  font-size: 12px;
+  margin-top: 4px;
+  min-height: 1em;
+}
+
+.error {
+  color: #f4212e;
+  font-size: 12px;
+}
+
+/* --- Buttons --- */
+.btn-signup {
+  display: block;
   width: 100%;
   padding: 12px;
+  background: var(--blue);
+  color: #fff;
   border: none;
   border-radius: 9999px;
-  font-weight: bold;
-  cursor: pointer;
   font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
   transition: background 0.2s;
+  margin-top: 6px;
 }
-.btn-signup {
-  background-color: #1d9bf0;
-  color: white;
-  margin-top: 10px;
-}
+
 .btn-signup:hover {
-  background-color: #1a8cd8;
+  background: var(--blue-hover);
 }
+
 .btn-signin {
-  background-color: white;
-  color: #1d9bf0;
-  border: 1px solid #cfd9de;
-  margin-top: 15px;
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: #fff;
+  color: var(--blue);
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 10px;
+  text-align: center;
 }
+
 .btn-signin:hover {
-  background-color: #f7f9f9;
+  background: var(--bg);
 }
+
+/* --- Footer --- */
 .footer-text {
   text-align: center;
   margin-top: 20px;
-  color: #536471;
+  color: var(--muted);
   font-size: 14px;
+}
+
+/* --- Responsive --- */
+@media (max-width: 480px) {
+  .signup-container {
+    padding: 28px 18px;
+    border-radius: 12px;
+  }
+
+  .row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
 }
