@@ -178,9 +178,9 @@ export const homeFeed = async (user_id: number) => {
         JOIN tweets t ON t.tweet_id = r.original_tweet_id
         JOIN users u ON t.user_id = u.user_id
         JOIN users ru ON r.user_id = ru.user_id
-        WHERE r.user_id IN ( SELECT following_id FROM follows WHERE follower_id = ? UNION SELECT ? )
+        WHERE r.user_id IN ( SELECT following_id FROM follows WHERE follower_id = ? UNION SELECT ?  )
 
-        ORDER  BY created_at DESC
+        ORDER  BY created_at DESC 
     `,
     [user_id, user_id, user_id, user_id],
   );

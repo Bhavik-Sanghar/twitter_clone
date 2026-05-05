@@ -354,5 +354,3 @@ document.querySelectorAll(".share-tweet").forEach((ele) => {
     }
   });
 });
-
-

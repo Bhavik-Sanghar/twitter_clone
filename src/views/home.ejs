@@ -56,7 +56,7 @@
 
 
 
-            <div class="tweets-list">
+            <div class="tweets-list" id="tweets-list">
                 <% feed.forEach(tweet=> { %>
                     <div class="tweet-card" id="tweet_<%= tweet.tweet_id %>">
                         <span class="retweet-info">
@@ -168,10 +168,9 @@
                                 <div class="tweet-meta">
                                     <span class="tweet-time" data-time="<%= tweet.created_at %>"></span>
                                 </div>
-
                     </div>
                     <% }) %>
-            </div>
+            </div> 
         </main>
 
 
