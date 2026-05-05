@@ -1,225 +1,460 @@
-/* --- Global Styles & Variables --- */
+Here is the complete, full home.css file. I have streamlined the structure using **Flexbox** to ensure the tweet content, buttons, and comments align perfectly without overlapping or causing layout shifts.
+```css
+/* =========================================================
+   home.css — Full Twitter Clone Styles (Classic Blue/White)
+   ========================================================= */
+
+/* --- Design Tokens --- */
 :root {
-    --twitter-blue: #1DA1F2;
-    --twitter-bg: #E6ECF0; /* Classic light blue-gray background */
-    --twitter-white: #FFFFFF;
-    --twitter-border: #E1E8ED;
-    --twitter-text: #14171A;
-    --twitter-light-text: #657786;
-    --twitter-hover: #F5F8FA;
+  --blue: #1d9bf0;
+  --blue-hover: #1a8cd8;
+  --bg-page: #ffffff;
+  --bg-sidebar-hover: rgba(29, 161, 242, 0.1);
+  --border: #eff3f4;
+  --text-main: #0f1419;
+  --text-muted: #536471;
+  --hover-card: #f7f9f9;
+  --pink: #f91880;
+  --green: #00ba7c;
+  --red: #f4212e;
+  --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
+/* --- Global Reset --- */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    background-color: var(--twitter-bg);
-    color: var(--twitter-text);
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: var(--font-stack);
+  background: var(--bg-page);
+  color: var(--text-main);
+  line-height: 1.4;
+  overflow-y: scroll;
 }
 
-/* --- Layout Container --- */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* --- Main Layout --- */
 .container {
-    display: flex;
-    max-width: 1190px;
-    margin: 0 auto;
-    min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  max-width: 1250px;
+  margin: 0 auto;
+  min-height: 100vh;
 }
 
-/* --- Sidebar Navigation --- */
+/* --- Left Sidebar --- */
 .sidebar {
-    width: 275px;
-    padding: 10px 15px;
-    display: flex;
-    flex-direction: column;
-    position: sticky;
-    top: 0;
-    height: 100vh;
+  width: 275px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 10px 15px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
 }
 
 .logo {
-    color: var(--twitter-blue);
-    font-size: 28px;
-    padding: 10px;
+  font-size: 30px;
+  color: var(--blue);
+  padding: 12px;
+  margin-bottom: 5px;
+  width: fit-content;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.logo:hover {
+  background: var(--bg-sidebar-hover);
 }
 
 .nav-item {
-    text-decoration: none;
-    color: var(--twitter-text);
-    font-size: 19px;
-    font-weight: bold;
-    padding: 12px 20px;
-    border-radius: 30px;
-    margin: 2px 0;
-    transition: 0.2s;
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  padding: 12px 16px;
+  border-radius: 9999px;
+  margin: 2px 0;
+  transition: 0.2s;
+  font-weight: 500;
 }
 
 .nav-item:hover {
-    background-color: rgba(29, 161, 242, 0.1);
-    color: var(--twitter-blue);
+  background: var(--sidebar-hover, #f0f0f0);
 }
 
 .nav-item.active {
-    color: var(--twitter-blue);
+  font-weight: 800;
+}
+
+.logout-section {
+  margin-top: auto;
+  padding-bottom: 20px;
+}
+
+#logout {
+  cursor: pointer;
+  padding: 12px;
+  border-radius: 9999px;
+  text-align: center;
+  font-weight: 700;
+  background: #fff0f0;
+  color: var(--red);
+  border: 1px solid #ffdde0;
 }
 
 /* --- Center Feed --- */
 .feed {
-    flex: 1;
-    max-width: 600px;
-    background-color: var(--twitter-white);
-    border-left: 1px solid var(--twitter-border);
-    border-right: 1px solid var(--twitter-border);
+  width: 600px;
+  border-right: 1px solid var(--border);
+  min-height: 100vh;
+  background: #fff;
 }
 
-.feed header {
-    padding: 15px;
-    background-color: var(--twitter-white);
-    border-bottom: 1px solid var(--twitter-border);
-    position: sticky;
-    top: 0;
-    z-index: 10;
+header {
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  z-index: 20;
+  padding: 15px;
 }
 
-.feed h1 {
-    font-size: 19px;
-    font-weight: 800;
+header h1 {
+  font-size: 20px;
+  font-weight: 800;
 }
 
 /* --- Tweet Composer --- */
 .tweet-composer {
-    display: flex;
-    padding: 15px;
-    background-color: #F5F8FA; /* Subtle contrast for composer */
-    border-bottom: 10px solid var(--twitter-bg); /* Section divider */
+  display: flex;
+  padding: 15px;
+  gap: 12px;
+  border-bottom: 8px solid var(--border);
 }
 
-.avatar-placeholder img, .tweet-avatar img {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    margin-right: 12px;
+.avatar-placeholder img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+#tweetForm {
+  flex: 1;
 }
 
 #tweet_content {
-    width: 100%;
-    background: var(--twitter-white);
-    border: 1px solid var(--twitter-border);
-    border-radius: 8px;
-    color: var(--twitter-text);
-    font-size: 16px;
-    outline: none;
-    padding: 12px;
-    resize: none;
+  width: 100%;
+  border: none;
+  font-size: 20px;
+  padding: 10px 0;
+  outline: none;
+  font-family: inherit;
 }
 
 .composer-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
 }
 
 .tweet-btn {
-    background-color: var(--twitter-blue);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 100px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s;
+  background: var(--blue);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 9999px;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .tweet-btn:hover {
-    background-color: #1991DA;
+  background: var(--blue-hover);
 }
 
-/* --- Tweets List --- */
+/* --- Tweet Cards --- */
 .tweet-card {
-    padding: 15px;
-    border-bottom: 1px solid var(--twitter-border);
-    transition: background 0.2s;
-    background-color: var(--twitter-white);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: 0.2s;
 }
 
 .tweet-card:hover {
-    background-color: var(--twitter-hover);
+  background: var(--hover-card);
+}
+
+.retweet-info {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-left: 40px;
+  margin-bottom: 4px;
+}
+
+/* Content layout fixing overlap */
+.tweet-header {
+  display: flex;
+  gap: 12px;
+  position: relative;
+}
+
+.tweet-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.tweet-header-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .tweet-username {
-    font-weight: bold;
-    color: var(--twitter-text);
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .tweet-handle {
-    color: var(--twitter-light-text);
-    font-size: 14px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.verified-badge {
+  width: 18px;
+  height: 18px;
+}
+
+/* Edit/Delete/Share Positioning */
+#tweet-edit-delete-div {
+  display: flex;
+  gap: 10px;
+}
+
+#tweet-edit-delete-div span {
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+#tweet-edit-delete-div span:hover {
+  text-decoration: underline;
+  color: var(--text-main);
+}
+
+.del_tweet {
+  color: var(--red) !important;
 }
 
 .tweet-content {
-    margin-top: 5px;
-    font-size: 15px;
-    color: var(--twitter-text);
+  margin: 5px 0 10px 60px;
+  font-size: 15px;
+  line-height: 1.5;
+  word-wrap: break-word;
 }
 
-/* --- Actions --- */
+.tweet-image {
+  margin-left: 60px;
+  width: calc(100% - 60px);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  max-height: 500px;
+  object-fit: cover;
+}
+
+/* Actions Bar */
 .tweet-actions {
-    display: flex;
-    justify-content: space-between;
-    max-width: 350px;
-    margin-top: 12px;
-    color: var(--twitter-light-text);
+  display: flex;
+  justify-content: space-between;
+  margin-left: 60px;
+  max-width: 425px;
+  margin-top: 10px;
 }
 
-.action-btn button {
-    color: var(--twitter-light-text);
-    transition: 0.2s;
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
 }
 
-.action-btn:hover .heart-icon { color: #E0245E; }
-.action-btn:hover .retweet-icon { color: #17BF63; }
-.active-like { color: #E0245E; }
+.like-btn:hover { color: var(--pink); }
+.active-like { color: var(--pink); font-weight: bold; }
+.retweet-btn:hover { color: var(--green); }
+.active-retweet { color: var(--green); font-weight: bold; }
 
-/* --- Comments --- */
+/* --- Comments Section Fix --- */
 .comment-section {
-    margin-top: 10px;
-    padding: 15px;
-    background-color: #F5F8FA;
-    border-radius: 8px;
+  margin-left: 60px;
+  margin-top: 15px;
+  background: #f8fafb;
+  border-radius: 16px;
+  padding: 15px;
+  border: 1px solid var(--border);
 }
 
-/* --- Right Sidebar --- */
+.comment-input-area {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.comment-input {
+  flex: 1;
+  padding: 10px 15px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  outline: none;
+  font-size: 14px;
+}
+
+.reply-btn {
+  background: var(--blue);
+  color: white;
+  border: none;
+  padding: 0 15px;
+  border-radius: 20px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.comment-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+}
+
+.comment-user-avatar img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.comment-details {
+  flex: 1;
+}
+
+.comment-user {
+  font-weight: 700;
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+.comment-text {
+  font-size: 14px;
+  color: var(--text-main);
+  display: block;
+  margin-top: 2px;
+}
+
+.delete-comment {
+  color: var(--red);
+  font-size: 11px;
+  cursor: pointer;
+  float: right;
+}
+
+/* --- Right Sidebar (Widgets) --- */
 .widgets {
-    width: 350px;
-    padding: 10px 20px;
+  width: 350px;
+  padding: 10px 20px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
 }
 
 .search-box input {
-    width: 100%;
-    background-color: #E6ECF0;
-    border: 1px solid var(--twitter-border);
-    padding: 10px 20px;
-    border-radius: 20px;
-    outline: none;
+  width: 100%;
+  background: #eff3f4;
+  border: 1px solid transparent;
+  padding: 12px 20px;
+  border-radius: 9999px;
+  outline: none;
+}
+
+.search-box input:focus {
+  background: #fff;
+  border-color: var(--blue);
 }
 
 .suggested-users {
-    background-color: #F5F8FA;
-    border: 1px solid var(--twitter-border);
-    border-radius: 15px;
-    padding: 15px;
-    margin-top: 20px;
+  background: #f7f9f9;
+  border-radius: 16px;
+  padding: 15px;
+  margin-top: 20px;
 }
 
-/* --- Toasts --- */
-.toast {
-    background-color: #333;
-    color: white;
-    padding: 12px 24px;
-    border-radius: 4px;
-    font-size: 14px;
+.suggested-user-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
 }
+
+.suggested-avatar img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+/* --- Toast Notifications --- */
+#toast-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+}
+
+.toast {
+  background: var(--blue);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 9999px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-weight: 600;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* --- Responsive --- */
+@media (max-width: 1100px) {
+  .widgets { display: none; }
+}
+
+@media (max-width: 700px) {
+  .sidebar { width: 80px; align-items: center; }
+  .nav-item span { display: none; }
+  .logout-section h2 { display: none; }
+  .container { justify-content: flex-start; }
+}
+
+```
