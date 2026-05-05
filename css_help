@@ -1,0 +1,225 @@
+/* --- Global Styles & Variables --- */
+:root {
+    --twitter-blue: #1DA1F2;
+    --twitter-bg: #E6ECF0; /* Classic light blue-gray background */
+    --twitter-white: #FFFFFF;
+    --twitter-border: #E1E8ED;
+    --twitter-text: #14171A;
+    --twitter-light-text: #657786;
+    --twitter-hover: #F5F8FA;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--twitter-bg);
+    color: var(--twitter-text);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* --- Layout Container --- */
+.container {
+    display: flex;
+    max-width: 1190px;
+    margin: 0 auto;
+    min-height: 100vh;
+}
+
+/* --- Sidebar Navigation --- */
+.sidebar {
+    width: 275px;
+    padding: 10px 15px;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+
+.logo {
+    color: var(--twitter-blue);
+    font-size: 28px;
+    padding: 10px;
+}
+
+.nav-item {
+    text-decoration: none;
+    color: var(--twitter-text);
+    font-size: 19px;
+    font-weight: bold;
+    padding: 12px 20px;
+    border-radius: 30px;
+    margin: 2px 0;
+    transition: 0.2s;
+}
+
+.nav-item:hover {
+    background-color: rgba(29, 161, 242, 0.1);
+    color: var(--twitter-blue);
+}
+
+.nav-item.active {
+    color: var(--twitter-blue);
+}
+
+/* --- Center Feed --- */
+.feed {
+    flex: 1;
+    max-width: 600px;
+    background-color: var(--twitter-white);
+    border-left: 1px solid var(--twitter-border);
+    border-right: 1px solid var(--twitter-border);
+}
+
+.feed header {
+    padding: 15px;
+    background-color: var(--twitter-white);
+    border-bottom: 1px solid var(--twitter-border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.feed h1 {
+    font-size: 19px;
+    font-weight: 800;
+}
+
+/* --- Tweet Composer --- */
+.tweet-composer {
+    display: flex;
+    padding: 15px;
+    background-color: #F5F8FA; /* Subtle contrast for composer */
+    border-bottom: 10px solid var(--twitter-bg); /* Section divider */
+}
+
+.avatar-placeholder img, .tweet-avatar img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
+#tweet_content {
+    width: 100%;
+    background: var(--twitter-white);
+    border: 1px solid var(--twitter-border);
+    border-radius: 8px;
+    color: var(--twitter-text);
+    font-size: 16px;
+    outline: none;
+    padding: 12px;
+    resize: none;
+}
+
+.composer-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.tweet-btn {
+    background-color: var(--twitter-blue);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 100px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.tweet-btn:hover {
+    background-color: #1991DA;
+}
+
+/* --- Tweets List --- */
+.tweet-card {
+    padding: 15px;
+    border-bottom: 1px solid var(--twitter-border);
+    transition: background 0.2s;
+    background-color: var(--twitter-white);
+}
+
+.tweet-card:hover {
+    background-color: var(--twitter-hover);
+}
+
+.tweet-username {
+    font-weight: bold;
+    color: var(--twitter-text);
+}
+
+.tweet-handle {
+    color: var(--twitter-light-text);
+    font-size: 14px;
+}
+
+.tweet-content {
+    margin-top: 5px;
+    font-size: 15px;
+    color: var(--twitter-text);
+}
+
+/* --- Actions --- */
+.tweet-actions {
+    display: flex;
+    justify-content: space-between;
+    max-width: 350px;
+    margin-top: 12px;
+    color: var(--twitter-light-text);
+}
+
+.action-btn button {
+    color: var(--twitter-light-text);
+    transition: 0.2s;
+}
+
+.action-btn:hover .heart-icon { color: #E0245E; }
+.action-btn:hover .retweet-icon { color: #17BF63; }
+.active-like { color: #E0245E; }
+
+/* --- Comments --- */
+.comment-section {
+    margin-top: 10px;
+    padding: 15px;
+    background-color: #F5F8FA;
+    border-radius: 8px;
+}
+
+/* --- Right Sidebar --- */
+.widgets {
+    width: 350px;
+    padding: 10px 20px;
+}
+
+.search-box input {
+    width: 100%;
+    background-color: #E6ECF0;
+    border: 1px solid var(--twitter-border);
+    padding: 10px 20px;
+    border-radius: 20px;
+    outline: none;
+}
+
+.suggested-users {
+    background-color: #F5F8FA;
+    border: 1px solid var(--twitter-border);
+    border-radius: 15px;
+    padding: 15px;
+    margin-top: 20px;
+}
+
+/* --- Toasts --- */
+.toast {
+    background-color: #333;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 14px;
+}
