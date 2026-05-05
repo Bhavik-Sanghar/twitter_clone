@@ -1,98 +1,101 @@
-Here is the complete, full home.css file. I have streamlined the structure using **Flexbox** to ensure the tweet content, buttons, and comments align perfectly without overlapping or causing layout shifts.
-```css
 /* =========================================================
-   home.css — Full Twitter Clone Styles (Classic Blue/White)
+   home.css — Twitter Clone Home Page
    ========================================================= */
 
 /* --- Design Tokens --- */
 :root {
   --blue: #1d9bf0;
   --blue-hover: #1a8cd8;
-  --bg-page: #ffffff;
-  --bg-sidebar-hover: rgba(29, 161, 242, 0.1);
+  --bg: #ffffff;
   --border: #eff3f4;
-  --text-main: #0f1419;
-  --text-muted: #536471;
-  --hover-card: #f7f9f9;
+  --text: #0f1419;
+  --muted: #536471;
+  --hover-bg: #f7f9f9;
+  --sidebar-hover: #e7e7e8;
   --pink: #f91880;
   --green: #00ba7c;
   --red: #f4212e;
-  --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --avatar-size: 48px;
+  --avatar-gap: 12px;
+  --tweet-indent: calc(var(--avatar-size) + var(--avatar-gap)); /* 60px */
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
 }
 
-/* --- Global Reset --- */
-* {
+/* --- Reset --- */
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
 body {
-  font-family: var(--font-stack);
-  background: var(--bg-page);
-  color: var(--text-main);
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
   line-height: 1.4;
-  overflow-y: scroll;
 }
 
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-/* --- Main Layout --- */
+/* =========================================================
+   Layout — 3-column grid
+   ========================================================= */
 .container {
-  display: flex;
-  justify-content: center;
-  max-width: 1250px;
+  display: grid;
+  grid-template-columns: 275px 600px 350px;
+  max-width: 1225px;
   margin: 0 auto;
   min-height: 100vh;
 }
 
-/* --- Left Sidebar --- */
+/* =========================================================
+   Left Sidebar
+   ========================================================= */
 .sidebar {
-  width: 275px;
   position: sticky;
   top: 0;
   height: 100vh;
-  padding: 10px 15px;
+  padding: 8px 20px;
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--border);
+  overflow-y: auto;
 }
 
 .logo {
-  font-size: 30px;
-  color: var(--blue);
-  padding: 12px;
-  margin-bottom: 5px;
+  font-size: 28px;
+  padding: 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
   width: fit-content;
   border-radius: 50%;
-  cursor: pointer;
-  transition: 0.2s;
+  transition: background 0.2s;
 }
 
 .logo:hover {
-  background: var(--bg-sidebar-hover);
+  background: var(--sidebar-hover);
 }
 
 .nav-item {
   display: flex;
   align-items: center;
+  gap: 16px;
+  text-decoration: none;
+  color: var(--text);
   font-size: 20px;
   padding: 12px 16px;
   border-radius: 9999px;
-  margin: 2px 0;
-  transition: 0.2s;
-  font-weight: 500;
+  margin-bottom: 4px;
+  transition: background 0.2s;
 }
 
 .nav-item:hover {
-  background: var(--sidebar-hover, #f0f0f0);
+  background: var(--sidebar-hover);
 }
 
 .nav-item.active {
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .logout-section {
@@ -102,297 +105,485 @@ a {
 
 #logout {
   cursor: pointer;
-  padding: 12px;
+  padding: 12px 16px;
   border-radius: 9999px;
+  font-size: 15px;
+  font-weight: 600;
   text-align: center;
-  font-weight: 700;
-  background: #fff0f0;
-  color: var(--red);
-  border: 1px solid #ffdde0;
+  background: #fce8e8;
+  color: #c0392b;
+  transition: background 0.2s;
 }
 
-/* --- Center Feed --- */
+#logout:hover {
+  background: #f9d0d0;
+}
+
+/* =========================================================
+   Center Feed
+   ========================================================= */
 .feed {
-  width: 600px;
   border-right: 1px solid var(--border);
   min-height: 100vh;
-  background: #fff;
 }
 
 header {
   position: sticky;
   top: 0;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
-  z-index: 20;
-  padding: 15px;
+  z-index: 10;
+  padding: 12px 16px;
 }
 
 header h1 {
   font-size: 20px;
   font-weight: 800;
+  margin-bottom: 4px;
 }
 
 /* --- Tweet Composer --- */
 .tweet-composer {
   display: flex;
-  padding: 15px;
-  gap: 12px;
-  border-bottom: 8px solid var(--border);
+  gap: var(--avatar-gap);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
 }
 
 .avatar-placeholder img {
-  width: 48px;
-  height: 48px;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
   border-radius: 50%;
   object-fit: cover;
+  flex-shrink: 0;
 }
 
 #tweetForm {
   flex: 1;
+  min-width: 0;
 }
 
 #tweet_content {
   width: 100%;
   border: none;
   font-size: 20px;
-  padding: 10px 0;
+  font-family: var(--font);
   outline: none;
-  font-family: inherit;
+  padding: 8px 0;
+  resize: none;
+  background: transparent;
+  color: var(--text);
+}
+
+#tweet_content::placeholder {
+  color: var(--muted);
 }
 
 .composer-actions {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-top: 15px;
+  justify-content: space-between;
   padding-top: 10px;
   border-top: 1px solid var(--border);
+  margin-top: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .tweet-btn {
   background: var(--blue);
-  color: white;
+  color: #fff;
   border: none;
-  padding: 10px 20px;
+  padding: 8px 20px;
   border-radius: 9999px;
+  font-size: 15px;
   font-weight: 700;
   cursor: pointer;
+  transition: background 0.2s;
 }
 
 .tweet-btn:hover {
   background: var(--blue-hover);
 }
 
-/* --- Tweet Cards --- */
+.tweet-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   Tweet Cards
+   ========================================================= */
 .tweet-card {
   padding: 12px 16px;
   border-bottom: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  transition: 0.2s;
+  transition: background 0.2s;
 }
 
 .tweet-card:hover {
-  background: var(--hover-card);
+  background: var(--hover-bg);
 }
 
+/* Retweet label above the card */
 .retweet-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 13px;
-  color: var(--text-muted);
-  font-weight: 700;
-  margin-left: 40px;
+  color: var(--muted);
+  font-weight: 600;
   margin-bottom: 4px;
+  padding-left: var(--tweet-indent);
 }
 
-/* Content layout fixing overlap */
+/* Top row: avatar + meta */
 .tweet-header {
   display: flex;
-  gap: 12px;
-  position: relative;
+  align-items: flex-start;
+  gap: var(--avatar-gap);
 }
 
 .tweet-avatar {
-  width: 48px;
-  height: 48px;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
   border-radius: 50%;
   object-fit: cover;
+  flex-shrink: 0;
 }
 
 .tweet-header-info {
+  display: flex;
+  flex-direction: row;        /* name row + edit/share in one line */
+  align-items: flex-start;
   flex: 1;
+  min-width: 0;
+  gap: 8px;
+}
+
+/* Name + handle block */
+.tweet-username-block {
   display: flex;
   flex-direction: column;
+  flex: 1;
   min-width: 0;
 }
 
 .tweet-username {
   font-weight: 700;
   font-size: 15px;
+  color: var(--text);
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 4px;
 }
 
 .tweet-handle {
-  color: var(--text-muted);
-  font-weight: 400;
+  color: var(--muted);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.tweet-handle:hover {
+  text-decoration: underline;
 }
 
 .verified-badge {
-  width: 18px;
-  height: 18px;
+  vertical-align: middle;
 }
 
-/* Edit/Delete/Share Positioning */
-#tweet-edit-delete-div {
+/* Edit / Delete buttons — use class .tweet-edit-delete-div in HTML too */
+#tweet-edit-delete-div,
+.tweet-edit-delete-div {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
-#tweet-edit-delete-div span {
+#tweet-edit-delete-div span,
+.tweet-edit-delete-div span {
   font-size: 13px;
-  color: var(--text-muted);
+  color: var(--muted);
   cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: color 0.2s;
+  white-space: nowrap;
 }
 
-#tweet-edit-delete-div span:hover {
+#tweet-edit-delete-div span:hover,
+.tweet-edit-delete-div span:hover {
+  color: var(--text);
   text-decoration: underline;
-  color: var(--text-main);
 }
 
-.del_tweet {
-  color: var(--red) !important;
+/* Share icon */
+#tweet-share,
+.tweet-share {
+  flex-shrink: 0;
 }
 
+.share-tweet {
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.share-tweet:hover {
+  opacity: 1;
+}
+
+/* Tweet body — indented to align under avatar */
 .tweet-content {
-  margin: 5px 0 10px 60px;
+  margin-top: 6px;
+  margin-left: var(--tweet-indent);
   font-size: 15px;
   line-height: 1.5;
-  word-wrap: break-word;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text);
 }
 
 .tweet-image {
-  margin-left: 60px;
-  width: calc(100% - 60px);
+  display: block;
+  margin-top: 12px;
+  margin-left: var(--tweet-indent);
+  width: calc(100% - var(--tweet-indent));
   border-radius: 16px;
   border: 1px solid var(--border);
-  max-height: 500px;
+  max-height: 512px;
   object-fit: cover;
 }
 
-/* Actions Bar */
+/* --- Tweet Actions (Like / Retweet / Comment) --- */
 .tweet-actions {
   display: flex;
-  justify-content: space-between;
-  margin-left: 60px;
-  max-width: 425px;
-  margin-top: 10px;
+  gap: 4px;
+  margin-top: 12px;
+  margin-left: var(--tweet-indent);
+  flex-wrap: wrap;
 }
 
 .action-btn {
   display: flex;
   align-items: center;
-  gap: 10px;
-  color: var(--text-muted);
+  gap: 6px;
+  color: var(--muted);
   font-size: 13px;
   cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  transition: color 0.2s, background 0.2s;
+  user-select: none;
+  background: transparent;
+  border: none;
+  font-family: var(--font);
 }
 
-.like-btn:hover { color: var(--pink); }
-.active-like { color: var(--pink); font-weight: bold; }
-.retweet-btn:hover { color: var(--green); }
-.active-retweet { color: var(--green); font-weight: bold; }
+.like-btn:hover {
+  color: var(--pink);
+  background: rgba(249, 24, 128, 0.08);
+}
 
-/* --- Comments Section Fix --- */
+.active-like {
+  color: var(--pink) !important;
+  font-weight: 700;
+}
+
+.retweet-btn:hover {
+  color: var(--green);
+  background: rgba(0, 186, 124, 0.08);
+}
+
+.active-retweet {
+  color: var(--green) !important;
+  font-weight: 700;
+}
+
+.comment-btn:hover {
+  color: var(--blue);
+  background: rgba(29, 155, 240, 0.08);
+}
+
+/* --- Tweet Timestamp --- */
+.tweet-meta {
+  margin-left: var(--tweet-indent);
+  margin-top: 4px;
+}
+
+.tweet-time {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* =========================================================
+   Comment Section
+   ========================================================= */
 .comment-section {
-  margin-left: 60px;
-  margin-top: 15px;
-  background: #f8fafb;
-  border-radius: 16px;
-  padding: 15px;
-  border: 1px solid var(--border);
+  margin-left: var(--tweet-indent);
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  /* Prevent overflow beyond card */
+  overflow: hidden;
 }
 
 .comment-input-area {
   display: flex;
   gap: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
+  align-items: center;
 }
 
 .comment-input {
   flex: 1;
-  padding: 10px 15px;
+  min-width: 0;             /* prevents overflow in flex */
   border: 1px solid var(--border);
   border-radius: 20px;
-  outline: none;
+  padding: 8px 14px;
   font-size: 14px;
+  font-family: var(--font);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.comment-input:focus {
+  border-color: var(--blue);
 }
 
 .reply-btn {
   background: var(--blue);
-  color: white;
+  color: #fff;
   border: none;
-  padding: 0 15px;
-  border-radius: 20px;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
+.reply-btn:hover {
+  background: var(--blue-hover);
+}
+
+/* Individual comment row */
 .comment-item {
   display: flex;
-  gap: 12px;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
   padding: 10px 0;
-  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.comment-item:last-child {
+  border-bottom: none;
+}
+
+.comment-main-content {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
 }
 
 .comment-user-avatar img {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
 .comment-details {
+  display: flex;
+  flex-direction: column;
   flex: 1;
+  min-width: 0;
 }
 
 .comment-user {
   font-weight: 700;
   font-size: 14px;
-  margin-right: 10px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.comment-user:hover {
+  text-decoration: underline;
 }
 
 .comment-text {
   font-size: 14px;
-  color: var(--text-main);
-  display: block;
+  color: var(--text);
   margin-top: 2px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.comment-time {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding-top: 2px;
 }
 
 .delete-comment {
+  font-size: 12px;
+  font-weight: 600;
   color: var(--red);
-  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 6px;
   cursor: pointer;
-  float: right;
+  transition: background 0.2s, color 0.2s;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  flex-shrink: 0;
+  background: transparent;
 }
 
-/* --- Right Sidebar (Widgets) --- */
+.delete-comment:hover {
+  color: #fff;
+  background: #e74c3c;
+  border-color: #e74c3c;
+}
+
+/* =========================================================
+   Right Sidebar (Widgets)
+   ========================================================= */
 .widgets {
-  width: 350px;
-  padding: 10px 20px;
+  padding: 12px 20px;
   position: sticky;
   top: 0;
   height: 100vh;
+  overflow-y: auto;
+}
+
+.search-box {
+  position: sticky;
+  top: 0;
+  padding: 6px 0 12px;
+  background: var(--bg);
+  z-index: 5;
 }
 
 .search-box input {
   width: 100%;
   background: #eff3f4;
-  border: 1px solid transparent;
-  padding: 12px 20px;
+  border: 2px solid transparent;
   border-radius: 9999px;
+  padding: 10px 18px;
+  font-size: 15px;
+  font-family: var(--font);
   outline: none;
+  transition: background 0.2s, border-color 0.2s;
 }
 
 .search-box input:focus {
@@ -400,61 +591,265 @@ header h1 {
   border-color: var(--blue);
 }
 
+.search_results {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.search_result_item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  color: var(--text);
+}
+
+.search_result_item:last-child {
+  border-bottom: none;
+}
+
+.search_result_item:hover {
+  background: var(--hover-bg);
+}
+
+.search_result_avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #eee;
+  flex-shrink: 0;
+}
+
+.search_result_item b {
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.search_result_item b span {
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .suggested-users {
-  background: #f7f9f9;
+  background: var(--hover-bg);
   border-radius: 16px;
-  padding: 15px;
-  margin-top: 20px;
+  padding: 14px 16px;
+  margin-top: 16px;
+}
+
+.suggested-users h3 {
+  font-size: 19px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  color: var(--text);
 }
 
 .suggested-user-card {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 15px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.suggested-user-card:last-child {
+  border-bottom: none;
 }
 
 .suggested-avatar img {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
-/* --- Toast Notifications --- */
+.suggested-user-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.suggested-display-name {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text);
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggested-handle {
+  color: var(--muted);
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.suggested-handle:hover {
+  text-decoration: underline;
+}
+
+/* =========================================================
+   Toast Notifications
+   ========================================================= */
 #toast-container {
   position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 20px;
+  right: 20px;
   z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
 }
 
 .toast {
-  background: var(--blue);
-  color: white;
-  padding: 12px 20px;
-  border-radius: 9999px;
-  margin-bottom: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  font-weight: 600;
-  animation: slideUp 0.3s ease;
+  min-width: 260px;
+  max-width: 320px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  color: #fff;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  animation: toast-in 0.3s ease;
+  pointer-events: all;
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-@keyframes slideUp {
-  from { transform: translateY(100px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+.toast.info    { background: #3498db; }
+.toast.success { background: #2ecc71; }
+.toast.error   { background: #e74c3c; }
+.toast.warning { background: #f39c12; }
+
+.fade-out {
+  opacity: 0;
 }
 
-/* --- Responsive --- */
+@keyframes toast-in {
+  from { transform: translateX(110%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+/* =========================================================
+   Responsive — Tablet (hide right sidebar)
+   ========================================================= */
 @media (max-width: 1100px) {
-  .widgets { display: none; }
+  .container {
+    grid-template-columns: 275px 1fr;
+  }
+
+  .widgets {
+    display: none;
+  }
 }
 
-@media (max-width: 700px) {
-  .sidebar { width: 80px; align-items: center; }
-  .nav-item span { display: none; }
-  .logout-section h2 { display: none; }
-  .container { justify-content: flex-start; }
+/* =========================================================
+   Responsive — Narrow tablet (collapse sidebar to icons)
+   ========================================================= */
+@media (max-width: 768px) {
+  .container {
+    grid-template-columns: 70px 1fr;
+  }
+
+  .sidebar {
+    padding: 8px;
+    align-items: center;
+  }
+
+  .logo {
+    font-size: 22px;
+    padding: 8px;
+  }
+
+  .nav-item {
+    font-size: 22px;
+    padding: 12px;
+    width: 46px;
+    height: 46px;
+    justify-content: center;
+  }
+
+  .nav-item span {
+    display: none; /* hide label text, keep icon */
+  }
+
+  #logout {
+    font-size: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Remove indent — no room on narrow screens */
+  .tweet-content,
+  .tweet-image,
+  .tweet-actions,
+  .tweet-meta,
+  .comment-section,
+  .retweet-info {
+    margin-left: 0;
+  }
+
+  .tweet-image {
+    width: 100%;
+  }
 }
 
-```
+/* =========================================================
+   Responsive — Mobile (hide sidebar, full-width feed)
+   ========================================================= */
+@media (max-width: 480px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  header {
+    padding: 10px 12px;
+  }
+
+  .tweet-composer,
+  .tweet-card {
+    padding: 10px 12px;
+  }
+
+  .tweet-composer {
+    gap: 8px;
+  }
+
+  #tweet_content {
+    font-size: 17px;
+  }
+
+  /* Already zeroed at 768px — keep zeroed on mobile */
+  .tweet-content,
+  .tweet-image,
+  .tweet-actions,
+  .tweet-meta,
+  .comment-section,
+  .retweet-info {
+    margin-left: 0;
+  }
+
+  .tweet-image {
+    width: 100%;
+  }
+}
