@@ -1,64 +1,105 @@
-/* /css/email_simulation.css */
+/* =========================================================
+   email_simulation.css — Twitter Clone OTP Email Simulation Page
+   ========================================================= */
 
-body {
-    background-color: #f4f7f9;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
+:root {
+  --blue: #1d9bf0;
+  --blue-hover: #1a8cd8;
+  --text: #0f1419;
+  --muted: #536471;
+  --bg: #f7f9f9;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
 }
 
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* --- Email Card --- */
 .otp-box {
-    background: #ffffff;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-    text-align: center;
-    max-width: 400px;
-    width: 100%;
-    border: 1px solid #e1e8ed;
+  background: #fff;
+  padding: 40px 36px;
+  border-radius: 16px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06);
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  border: 1px solid #e1e8ed;
 }
 
 .otp-box p {
-    color: #536471;
-    font-size: 16px;
-    margin-bottom: 20px;
+  color: var(--muted);
+  font-size: 15px;
+  margin-bottom: 8px;
+  line-height: 1.5;
 }
 
+/* --- OTP Display --- */
 .otp-code {
-    background-color: #f8f9fa;
-    border: 2px dashed #1d9bf0;
-    border-radius: 8px;
-    font-size: 32px;
-    font-weight: 800;
-    color: #1d9bf0;
-    padding: 15px;
-    letter-spacing: 8px;
-    margin: 20px 0;
-    display: inline-block;
-    min-width: 200px;
+  background: #f8f9fa;
+  border: 2px dashed var(--blue);
+  border-radius: 10px;
+  font-size: 34px;
+  font-weight: 800;
+  color: var(--blue);
+  padding: 16px 20px;
+  letter-spacing: 10px;
+  display: inline-block;
+  min-width: 220px;
+  margin: 16px 0;
 }
 
+/* --- Expiry Notice --- */
+.otp-box p:last-of-type {
+  font-size: 13px;
+  color: #8b949e;
+  margin-top: 8px;
+}
+
+/* --- CTA Link --- */
 .link-text {
-    display: inline-block;
-    margin-top: 25px;
-    color: #1d9bf0;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 14px;
-    transition: color 0.2s ease;
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 24px;
+  background: var(--blue);
+  color: #fff;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 9999px;
+  transition: background 0.2s;
 }
 
 .link-text:hover {
-    color: #1a8cd8;
-    text-decoration: underline;
+  background: var(--blue-hover);
 }
 
-/* For the "Code expires" text */
-.otp-box p:last-of-type {
-    font-size: 13px;
-    color: #8b949e;
-    margin-top: 10px;
+/* --- Responsive --- */
+@media (max-width: 440px) {
+  .otp-box {
+    padding: 30px 20px;
+    border-radius: 12px;
+  }
+
+  .otp-code {
+    font-size: 28px;
+    letter-spacing: 7px;
+    min-width: auto;
+    padding: 12px 14px;
+  }
 }
