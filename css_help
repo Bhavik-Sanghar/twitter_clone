@@ -811,15 +811,22 @@ header h1 {
 }
 
 /* =========================================================
-   Responsive — Mobile (hide sidebar, full-width feed)
+   Responsive — Mobile (bottom nav bar replaces sidebar)
    ========================================================= */
 @media (max-width: 480px) {
+  /* Single column, feed takes full width */
   .container {
     grid-template-columns: 1fr;
   }
 
+  /* Hide the left sidebar entirely — bottom bar replaces it */
   .sidebar {
     display: none;
+  }
+
+  /* Push feed content up so it isn't hidden behind the bottom bar */
+  .feed {
+    padding-bottom: 60px;
   }
 
   header {
@@ -839,7 +846,6 @@ header h1 {
     font-size: 17px;
   }
 
-  /* Already zeroed at 768px — keep zeroed on mobile */
   .tweet-content,
   .tweet-image,
   .tweet-actions,
@@ -851,5 +857,77 @@ header h1 {
 
   .tweet-image {
     width: 100%;
+  }
+
+  /* ── Bottom Navigation Bar ── */
+  .mobile-bottom-nav {
+    display: flex !important;         /* shown only on mobile */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    z-index: 100;
+    align-items: stretch;
+  }
+
+  .mobile-bottom-nav a,
+  .mobile-bottom-nav button {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 11px;
+    font-family: var(--font);
+    font-weight: 500;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+    padding: 0;
+  }
+
+  .mobile-bottom-nav a:hover,
+  .mobile-bottom-nav button:hover {
+    color: var(--text);
+    background: var(--hover-bg);
+  }
+
+  .mobile-bottom-nav a.active {
+    color: var(--blue);
+    font-weight: 700;
+  }
+
+  /* Logout tab gets red tint */
+  .mobile-bottom-nav .mobile-logout {
+    color: #c0392b;
+  }
+
+  .mobile-bottom-nav .mobile-logout:hover {
+    background: #fce8e8;
+    color: #c0392b;
+  }
+
+  .mobile-bottom-nav .mobile-nav-icon {
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  .mobile-bottom-nav .mobile-nav-label {
+    font-size: 10px;
+    line-height: 1;
+  }
+}
+
+/* Hide bottom nav on anything wider than mobile */
+@media (min-width: 481px) {
+  .mobile-bottom-nav {
+    display: none;
   }
 }
