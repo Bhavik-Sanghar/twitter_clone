@@ -17,6 +17,9 @@
     if(response.status == 201){
         window.location.href = `${res.redirecturl}`
     }
+    if(response.status == 400){
+        window.alert(`${res.message || res.error}`);
+    }
     else{
         window.alert(`${res.message}`);
     }

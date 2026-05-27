@@ -13,7 +13,7 @@ document.querySelectorAll(".tweet-time").forEach((el) => {
   },
 );
 
-(document.getElementById("verify_email") as HTMLSpanElement).addEventListener(
+(document.getElementById("verify_email") as HTMLSpanElement)?.addEventListener(
   "click",
   () => {
     window.location.href = "/user/getVerfied";

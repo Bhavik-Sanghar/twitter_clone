@@ -134,30 +134,109 @@ document.querySelectorAll(".retweet-form").forEach((form) => {
   });
 });
 
+// document.querySelectorAll(".comment-form").forEach((form) => {
+//   form.addEventListener("submit", async (e) => {
+//     e.preventDefault();
+
+//     const currentForm = e.currentTarget as HTMLFormElement;
+//     const tweetIdInput = currentForm.querySelector(
+//       'input[name="tweet_id"]',
+//     ) as HTMLInputElement;
+//     const uniqueIdInput = currentForm.querySelector(
+//       'input[name="unique_id"]',
+//     ) as HTMLInputElement;
+
+
+//     const tweetId = tweetIdInput?.value;
+//     const uniqueId = uniqueIdInput?.value;
+
+//     if (!tweetId) return;
+
+//     const comment_display = document.getElementById(
+//       `comment-section-${tweetId}-${uniqueId}`,
+//     ) as HTMLDivElement;
+//     const comment_list = document.getElementById(
+//       `comments-list-${tweetId}-${uniqueId}`,
+//     ) as HTMLDivElement;
+
+//     if (comment_display.style.display === "block") {
+//       comment_display.style.display = "none";
+//       return;
+//     }
+
+//     try {
+//       const response = await fetch(
+//         `/user/tweets/comments/getComments/${tweetId}`,
+//         {
+//           method: "POST",
+//           credentials: "include",
+//         },
+//       );
+//       if (response.ok) {
+//         const result = await response.json();
+//         const comment_display = document.getElementById(
+//           `comment-section-${tweetId}-${uniqueId}`,
+//         ) as HTMLDivElement;
+//         comment_display.style.display = "block";
+//         comment_list.innerHTML = "";
+
+//         //append comments to comment list and also sentize the comment content to prevent xss attack
+//         result.forEach((comment: any) => {
+//           const comment_div = document.createElement("div");
+//           comment_div.innerHTML = `
+//     <div class="comment-main-content">
+//         <span class="comment-user-avatar">
+//             <img src="/${comment.profile_pic_url}">
+//         </span>
+//         <div class="comment-details">
+//             <a href="/user/profile/${comment.user_name}">
+//                 <span class="comment-user">${comment.user_name}</span>
+//             </a>
+//              <span>
+//            ${(comment.user_name === user_name) ? `<span class="delete-comment" data-comment-id="${comment.comment_id}"> Delete </span>` : ""}
+//           </span>
+//             <span class="comment-text">${comment.content}</span>
+//         </div>
+//     </div>
+//     <span class="comment-time" data-time="${comment.created_at}"></span>
+// `;
+//           comment_div.className = "comment-item";
+//           comment_list.appendChild(comment_div);
+
+//           //comment time formatting
+//           document.querySelectorAll(".comment-time").forEach((el) => {
+//             const rawTime = el.getAttribute("data-time");
+//             if (rawTime) {
+//               el.textContent = formatTimeToLocal(rawTime);
+//             }
+//           });
+//         });
+//       }
+//     } catch (error) {
+//       console.error("Error Retweeting:", error);
+//     }
+//   });
+// });
+
+
+//submit comment on post button click
+
+
 document.querySelectorAll(".comment-form").forEach((form) => {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const currentForm = e.currentTarget as HTMLFormElement;
-    const tweetIdInput = currentForm.querySelector(
-      'input[name="tweet_id"]',
-    ) as HTMLInputElement;
-    const uniqueIdInput = currentForm.querySelector(
-      'input[name="unique_id"]',
-    ) as HTMLInputElement;
-
+    const tweetIdInput = currentForm.querySelector('input[name="tweet_id"]') as HTMLInputElement;
+    const uniqueIdInput = currentForm.querySelector('input[name="unique_id"]') as HTMLInputElement;
 
     const tweetId = tweetIdInput?.value;
     const uniqueId = uniqueIdInput?.value;
 
     if (!tweetId) return;
 
-    const comment_display = document.getElementById(
-      `comment-section-${tweetId}-${uniqueId}`,
-    ) as HTMLDivElement;
-    const comment_list = document.getElementById(
-      `comments-list-${tweetId}-${uniqueId}`,
-    ) as HTMLDivElement;
+    const comment_display = document.getElementById(`comment-section-${tweetId}-${uniqueId}`) as HTMLDivElement;
+    const comment_list = document.getElementById(`comments-list-${tweetId}-${uniqueId}`) as HTMLDivElement;
 
     if (comment_display.style.display === "block") {
       comment_display.style.display = "none";
@@ -165,77 +244,141 @@ document.querySelectorAll(".comment-form").forEach((form) => {
     }
 
     try {
-      const response = await fetch(
-        `/user/tweets/comments/getComments/${tweetId}`,
-        {
-          method: "POST",
-          credentials: "include",
-        },
-      );
+      const response = await fetch(`/user/tweets/comments/getComments/${tweetId}`, {
+        method: "POST",
+        credentials: "include",
+      });
+
       if (response.ok) {
         const result = await response.json();
-        const comment_display = document.getElementById(
-          `comment-section-${tweetId}-${uniqueId}`,
-        ) as HTMLDivElement;
         comment_display.style.display = "block";
         comment_list.innerHTML = "";
 
         result.forEach((comment: any) => {
           const comment_div = document.createElement("div");
-          comment_div.innerHTML = `
-    <div class="comment-main-content">
-        <span class="comment-user-avatar">
-            <img src="/${comment.profile_pic_url}">
-        </span>
-        <div class="comment-details">
-            <a href="/user/profile/${comment.user_name}">
-                <span class="comment-user">${comment.user_name}</span>
-            </a>
-             <span>
-           ${(comment.user_name === user_name) ? `<span class="delete-comment" data-comment-id="${comment.comment_id}"> Delete </span>` : ""}
-          </span>
-            <span class="comment-text">${comment.content}</span>
-        </div>
-    </div>
-    <span class="comment-time" data-time="${comment.created_at}"></span>
-`;
           comment_div.className = "comment-item";
-          comment_list.appendChild(comment_div);
+          
+          // Use template for structure, leave text spans empty
+          comment_div.innerHTML = `
+            <div class="comment-main-content">
+                <span class="comment-user-avatar">
+                    <img src="/${comment.profile_pic_url}">
+                </span>
+                <div class="comment-details">
+                    <a href="/user/profile/${comment.user_name}">
+                        <span class="comment-user"></span>
+                    </a>
+                    <span>
+                      ${(comment.user_name === user_name) ? `<span class="delete-comment" data-comment-id="${comment.comment_id}"> Delete </span>` : ""}
+                    </span>
+                    <span class="comment-text"></span>
+                </div>
+            </div>
+            <span class="comment-time" data-time="${comment.created_at}"></span>
+          `;
 
-          //comment time formatting
-          document.querySelectorAll(".comment-time").forEach((el) => {
-            const rawTime = el.getAttribute("data-time");
-            if (rawTime) {
-              el.textContent = formatTimeToLocal(rawTime);
-            }
-          });
+          // SECURE: Set text content manually
+          comment_div.querySelector('.comment-user')!.textContent = comment.user_name;
+          comment_div.querySelector('.comment-text')!.textContent = comment.content;
+
+          comment_list.appendChild(comment_div);
+        });
+
+        // Format time for the newly added comments
+        comment_list.querySelectorAll(".comment-time").forEach((el) => {
+          const rawTime = el.getAttribute("data-time");
+          if (rawTime) el.textContent = formatTimeToLocal(rawTime);
         });
       }
     } catch (error) {
-      console.error("Error Retweeting:", error);
+      console.error("Error fetching comments:", error);
     }
   });
 });
 
 
-//submit comment on post button click
+
+// document.addEventListener("click", async (e) => {
+//   const target = e.target as HTMLElement;
+
+//   if (target.classList.contains("reply-btn")) {
+//     const tweetId = target.getAttribute("data-tweet-id");
+//     const uniqueId = target.getAttribute("data-unique-id");
+//     console.log(tweetId);
+
+//     const input = document.getElementById(
+//       `comment-input-${tweetId}-${uniqueId}`,
+//     ) as HTMLInputElement;
+//     const content = input.value.trim();
+
+//     if (!content) return showToast("Write something first!", "error");
+    
+//     //content length validation
+//     if(content.length > 255) return showToast("Comment cannot be more than 255 characters!" , "error");
+
+//     const response = await fetch("/user/tweets/comments/createComment", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ comment_content: content, tweetId: tweetId }),
+//     });
+
+//     const res = await response.json();
+//     if (response.ok) {
+//       input.value = "";
+//       const comment_list = document.getElementById(
+//         `comments-list-${tweetId}-${uniqueId}`,
+//       ) as HTMLDivElement;
+//       const comment_div = document.createElement("div");
+//       comment_div.className = "comment-item";
+//       comment_div.innerHTML = `
+//     <div class="comment-main-content">
+//         <span class="comment-user-avatar">
+//             <img src="/${profile_pic_url}">
+//         </span>
+//         <div class="comment-details">
+//             <a href="/user/profile/${user_name}">
+//                 <span class="comment-user">${user_name}</span>
+//             </a>
+//             <span class="comment-text">${content}</span>
+//         </div>
+//         </div>
+//     <span class="comment-time" data-time="${new Date().toISOString()}"></span>
+// `;
+
+//       const comment_count = parseInt(
+//         document.getElementById(`count_comment_${tweetId}`)!.innerText,
+//       );
+//       document.getElementById(`count_comment_${tweetId}`)!.innerText = (
+//         comment_count + 1
+//       ).toString();
+
+//       comment_list.prepend(comment_div);
+//       //comment time formatting
+//       document.querySelectorAll(".comment-time").forEach((el) => {
+//         const rawTime = el.getAttribute("data-time");
+//         if (rawTime) {
+//           el.textContent = formatTimeToLocal(rawTime);
+//         }
+//       });
+//       comment_list.scrollTop = 0;
+//     }
+//   }
+// });
+
+//delete comment
+
 document.addEventListener("click", async (e) => {
   const target = e.target as HTMLElement;
 
   if (target.classList.contains("reply-btn")) {
     const tweetId = target.getAttribute("data-tweet-id");
     const uniqueId = target.getAttribute("data-unique-id");
-    console.log(tweetId);
 
-    const input = document.getElementById(
-      `comment-input-${tweetId}-${uniqueId}`,
-    ) as HTMLInputElement;
+    const input = document.getElementById(`comment-input-${tweetId}-${uniqueId}`) as HTMLInputElement;
     const content = input.value.trim();
 
     if (!content) return showToast("Write something first!", "error");
-    
-    //content length validation
-    if(content.length > 255) return showToast("Comment cannot be more than 255 characters!" , "error");
+    if (content.length > 255) return showToast("Comment too long!", "error");
 
     const response = await fetch("/user/tweets/comments/createComment", {
       method: "POST",
@@ -243,50 +386,52 @@ document.addEventListener("click", async (e) => {
       body: JSON.stringify({ comment_content: content, tweetId: tweetId }),
     });
 
-    const res = await response.json();
     if (response.ok) {
       input.value = "";
-      const comment_list = document.getElementById(
-        `comments-list-${tweetId}-${uniqueId}`,
-      ) as HTMLDivElement;
+      const comment_list = document.getElementById(`comments-list-${tweetId}-${uniqueId}`) as HTMLDivElement;
+      
       const comment_div = document.createElement("div");
       comment_div.className = "comment-item";
       comment_div.innerHTML = `
-    <div class="comment-main-content">
-        <span class="comment-user-avatar">
-            <img src="/${profile_pic_url}">
-        </span>
-        <div class="comment-details">
-            <a href="/user/profile/${user_name}">
-                <span class="comment-user">${user_name}</span>
-            </a>
-            <span class="comment-text">${content}</span>
+        <div class="comment-main-content">
+            <span class="comment-user-avatar">
+                <img src="/${profile_pic_url}">
+            </span>
+            <div class="comment-details">
+                <a href="/user/profile/${user_name}">
+                    <span class="comment-user"></span>
+                </a>
+                <span class="comment-text"></span>
+            </div>
         </div>
-        </div>
-    <span class="comment-time" data-time="${new Date().toISOString()}"></span>
-`;
+        <span class="comment-time" data-time="${new Date().toISOString()}"></span>
+      `;
 
-      const comment_count = parseInt(
-        document.getElementById(`count_comment_${tweetId}`)!.innerText,
-      );
-      document.getElementById(`count_comment_${tweetId}`)!.innerText = (
-        comment_count + 1
-      ).toString();
+      // SECURE: Set text content manually
+      comment_div.querySelector('.comment-user')!.textContent = user_name;
+      comment_div.querySelector('.comment-text')!.textContent = content;
+
+      // Update count
+      const countEl = document.getElementById(`count_comment_${tweetId}`);
+      if (countEl) {
+        countEl.innerText = (parseInt(countEl.innerText) + 1).toString();
+      }
 
       comment_list.prepend(comment_div);
-      //comment time formatting
-      document.querySelectorAll(".comment-time").forEach((el) => {
-        const rawTime = el.getAttribute("data-time");
-        if (rawTime) {
-          el.textContent = formatTimeToLocal(rawTime);
-        }
-      });
+      
+      // Format time
+      const timeEl = comment_div.querySelector(".comment-time");
+      if (timeEl) {
+        const rawTime = timeEl.getAttribute("data-time");
+        timeEl.textContent = formatTimeToLocal(rawTime!);
+      }
+      
       comment_list.scrollTop = 0;
     }
   }
 });
 
-//delete comment
+
 document.addEventListener("click" , async (e) => {
   const target = e.target as HTMLElement;
 

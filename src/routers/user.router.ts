@@ -1,10 +1,16 @@
 import { Router, Request, Response, request, response } from "express";
 import { authUser } from "../middleware/auth.middleware";
 import { changePassword, createComment, deleteTweet, getComments, getEditProfile, getFollowersFollowingList, getProfile, homePage, retweetToggle, searchUsers, shareTweetPage, toggelFollow, tweetLikeToggle, tweetPost, updateUserProfile } from "../controllers/user.controller";
-import { upload } from "../middleware/fileUpload.middleware";
-
+import {  upload } from "../middleware/fileUpload.middleware";
+import multer from "multer";
 
 const router = Router();
+
+
+//shrare tweet
+router.get("/share/:username/:tweetId" , shareTweetPage);
+
+
 
 router.use(authUser)
 
@@ -22,7 +28,7 @@ router.post("/editUserProfile",  upload.fields([
 
 router.post("/tweets/create", upload.fields([
   { name: "tweet_img", maxCount: 1 } 
-]), tweetPost);
+]),  tweetPost);
 
 
 //Follow-Unfollow 
@@ -59,8 +65,20 @@ router.delete("/tweet/:tweetId/delete" , deleteTweet);
 //chnagePassword
 router.post("/changePassword" , changePassword)
 
-//shrare tweet
-router.get("/share/:username/:tweetId" , shareTweetPage);
+router.use((err: any, req: any, res: any, next: any) => {
+   if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ 
+        error: "File is too large! Maximum limit is 5MB."  
+      });
+    }
+    return res.status(400).json({ error: err.message });
+  }
+  if (err instanceof Error) {
+    return res.status(400).json({ error: err.message });
+  }
+  res.status(500).json({ error: "Internal Server Error" });
+});
 
 
 

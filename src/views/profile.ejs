@@ -150,7 +150,6 @@
                             <!-- Edit/Delete stays in header for correct alignment -->
                             <div id="tweet-edit-delete-div"
                                 style="display: <%= tweet.user_id === user.user_id ? 'flex' : 'none' %>;">
-                                <span id="<%= tweet.tweet_id %>_edit">Edit</span>
                                 <span class="del_tweet" data-tweet-id="<%= tweet.tweet_id %>"
                                     id="<%= tweet.tweet_id %>_del">Delete</span>
                             </div>

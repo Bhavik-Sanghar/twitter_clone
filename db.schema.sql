@@ -68,8 +68,7 @@ CREATE TABLE comments (
   comment_id  INT AUTO_INCREMENT PRIMARY KEY,
   user_id     BIGINT NOT NULL,
   tweet_id    INT NOT NULL,
-  parent_id   INT DEFAULT NULL,   -- NULL = top level comment
-                                  -- has value = reply to a comment
+  parent_id   INT DEFAULT NULL,   
   content     VARCHAR(256) NOT NULL,
   created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -83,7 +82,7 @@ CREATE TABLE comments (
 CREATE TABLE retweets (
   retweet_id      INT AUTO_INCREMENT PRIMARY KEY,
   user_id         BIGINT NOT NULL,
-  original_tweet_id INT NOT NULL,   -- the tweet being retweeted
+  original_tweet_id INT NOT NULL,   
   created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
   UNIQUE KEY unique_retweet (user_id, original_tweet_id),  -- one retweet per tweet

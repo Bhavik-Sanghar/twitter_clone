@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home <%= user.user_name %>
-    </title>
+</title>
     <link rel="stylesheet" href="/css/home.css">
 </head>
 
@@ -15,7 +15,6 @@
     <div class="container">
         <!-- Left Sidebar -->
         <nav class="sidebar">
-            <div class="logo">𝕏</div>
             <a href="#" class="nav-item active">Home</a>
             <a href="#" class="nav-item" id="gotoProfile">Profile</a>
             <div class="logout-section">
@@ -26,13 +25,15 @@
         <!-- Center Feed -->
         <main class="feed">
             <header>
-                <h1>Hola 👋 <%= user.first_name %>
+                <h1>Hola 👋 <a href="/user/profile/<%= user.user_name %>"> <%= user.first_name %></a>
                         <div id="toast-container"></div>
 
                 </h1>
                 <div class="tweet-composer">
                     <div class="avatar-placeholder">
+                        <a href="/user/profile/<%= user.user_name %>">
                         <img src="/<%= user.profile_pic_url %>" alt="Profile">
+                        </a>
                     </div>
                     <form id="tweetForm">
                         <input type="text" placeholder="What is happening?!" id="tweet_content" name="tweet_content">
@@ -46,7 +47,7 @@
 
                         <div class="composer-actions">
                             <label for="tweet_img" style="cursor: pointer; color: #1d9bf0;">🖼️ Add Photo</label>
-                            <input type="file" id="tweet_img" name="tweet_img" accept="image/*" style="display: none;">
+                            <input type="file" id="tweet_img" name="tweet_img" accept="image/*" style="display: none;" >
                             <span id="input-char-count"></span>
                             <button type="submit" class="tweet-btn">Post</button>
                         </div>
@@ -77,8 +78,8 @@
                             </div>
                             <!-- Edit/Delete stays in header for correct alignment -->
                             <div id="tweet-edit-delete-div"
-                                style="display: <%= tweet.user_id === user.user_id ? 'flex' : 'none' %>;">
-                                <span id="<%= tweet.tweet_id %>_edit">Edit</span>
+                                style=`display: <%= tweet.user_id === user.user_id ? 'flex' : 'none' %>;`>
+                
                                 <span class="del_tweet" data-tweet-id="<%= tweet.tweet_id %>"
                                     id="<%= tweet.tweet_id %>_del">Delete</span>
                             </div>

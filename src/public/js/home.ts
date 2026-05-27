@@ -119,7 +119,7 @@ contentInput.addEventListener("input", () => {
         showToast("Tweet posted!");
         window.location.reload();
       } else {
-        showToast(result.message || "Error posting tweet");
+        showToast(result.message || result.error || "Error posting tweet");
         submitBtn.disabled = false;
       }
     } catch (err) {
